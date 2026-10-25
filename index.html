@@ -51,6 +51,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .mapbox{position:relative;height:min(50vh,440px);overflow:hidden}
 .trip-on .mapbox{height:min(42vh,380px)}
 #map{width:100%;height:100%;display:block;background:var(--soft);font:inherit}
+@media (prefers-color-scheme:dark){.leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6)}}
 .mapctl,.legend,.pick{z-index:1000}
 .leaflet-tooltip.lbl{background:transparent;border:0;box-shadow:none;padding:0;font:700 12px/1.2 "Zen Kaku Gothic New",system-ui,sans-serif;color:var(--ink);text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 2px var(--surface)}
 .leaflet-tooltip.lbl::before{display:none}
@@ -346,7 +347,9 @@ let C={};const readC=()=>{C={ink:css("--ink"),surface:css("--surface"),no:css("-
 const map=L.map("map",{zoomControl:false,minZoom:10,maxZoom:19,zoomSnap:0.5}).setView([35.69,139.75],12);
 map.attributionControl.setPrefix(false);
 const darkQ=matchMedia("(prefers-color-scheme: dark)");let tiles=null;
-function setTiles(){if(tiles)map.removeLayer(tiles);tiles=L.tileLayer(`https://{s}.basemaps.cartocdn.com/${darkQ.matches?"dark_all":"rastertiles/voyager"}/{z}/{x}/{y}{r}.png`,{subdomains:"abcd",maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map)}
+const TILES=[["https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}],["https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:'© Esri, OpenStreetMap contributors'}]];
+let tileI=0,tileErr=0;
+function setTiles(){if(tiles)map.removeLayer(tiles);tileErr=0;tiles=L.tileLayer(TILES[tileI][0],TILES[tileI][1]).on("tileerror",()=>{if(++tileErr>6&&tileI<TILES.length-1){tileI++;setTiles()}}).addTo(map)}
 setTiles();
 ["avoid","lines","route","stations","lm","me"].forEach((n,i)=>{map.createPane(n).style.zIndex=410+i*10});
 const rSt=L.canvas({pane:"stations",tolerance:10}),rAv=L.canvas({pane:"avoid",tolerance:8});
