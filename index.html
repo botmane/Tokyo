@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15202B">
+<title>Pass Route Tokyo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9EDF1;--surface:#FFFFFF;--ink:#15202B;--muted:#56626E;--rule:#D3D9E0;--soft:#F3F5F8;--ok:#127A4B;--okbg:#E2F3EA;--warn:#8A5A00;--warnbg:#FFF3D6;--no:#C7322B;--nobg:#FDE8E6;--me:#1A73E8;--focus:#2563EB;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1217;--surface:#161D24;--ink:#E7ECF0;--muted:#97A3AE;--rule:#2B353F;--soft:#1D2630;--ok:#5ACB8E;--okbg:#12301F;--warn:#F3C35B;--warnbg:#33270B;--no:#FF7A70;--nobg:#3A1614;--me:#6EA8FF;--focus:#7AA7FF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1217;--surface:#161D24;--ink:#E7ECF0;--muted:#97A3AE;--rule:#2B353F;--soft:#1D2630;--ok:#5ACB8E;--okbg:#12301F;--warn:#F3C35B;--warnbg:#33270B;--no:#FF7A70;--nobg:#3A1614;--me:#6EA8FF;--focus:#7AA7FF;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:720px;margin:0 auto;padding:14px 12px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 12px}
+h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-0.01em}
+.pass{font-size:13px;color:var(--ok);background:var(--okbg);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:16px}
+.trip{padding:6px 6px 6px 14px;display:grid;grid-template-columns:18px minmax(0,1fr) 44px;gap:0 10px;align-items:center;position:relative}
+.dot{width:12px;height:12px;border-radius:50%;border:3px solid var(--ink);justify-self:center}
+.dot.to{background:var(--ink)}
+.rail{position:absolute;left:22px;top:30px;bottom:30px;width:2px;background:var(--rule)}
+.field{position:relative}
+.field input{width:100%;font:inherit;font-size:17px;color:var(--ink);background:transparent;border:0;padding:12px 4px;outline:none}
+.field input::placeholder{color:var(--muted)}
+.sep{border-top:1px solid var(--rule)}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:var(--ink);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.iconbtn:hover{background:var(--soft)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sugg{position:absolute;left:-36px;right:-50px;top:100%;z-index:30;background:var(--surface);border:1px solid var(--rule);border-radius:12px;margin-top:4px;max-height:320px;overflow:auto;display:none;box-shadow:0 10px 30px rgba(0,0,0,.14)}
+.sugg.on{display:block}
+.sugg button{display:flex;width:100%;align-items:center;gap:10px;padding:10px 12px;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.sugg button:hover,.sugg button.hl{background:var(--soft)}
+.sugg .ja{color:var(--muted);font-size:13px;margin-left:auto}
+.chips{display:flex;gap:3px;flex-wrap:wrap}
+.b{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 3px;border-radius:50%;border:3px solid;font-size:11px;font-weight:700;background:#fff;color:#15202B;line-height:1;flex-shrink:0}
+.b.lg{min-width:34px;height:34px;border-width:4px;font-size:14px}
+.me-i{width:22px;height:22px;border-radius:50%;background:var(--me);border:3px solid var(--surface);box-shadow:0 0 0 2px var(--me);flex-shrink:0}
+.tools{display:flex;gap:8px;margin:10px 0 12px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:3px}
+.seg button{font:inherit;font-size:14px;border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.mapbox{position:relative;height:min(50vh,440px);overflow:hidden}
+.trip-on .mapbox{height:min(42vh,380px)}
+#map{width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none}
+.mapctl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.mapctl button{width:40px;height:40px;border-radius:10px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);font-size:18px;cursor:pointer}
+.mapctl button[aria-pressed="true"]{background:var(--me);color:#fff;border-color:var(--me)}
+.legend{position:absolute;left:10px;top:10px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px;cursor:pointer;font-family:inherit;text-align:left}
+.legend span{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.legend i{display:inline-block;width:22px;height:0;border-top:4px solid var(--ink)}
+.legend i.no{border-top:3px dashed var(--no)}
+.legend.off .r2{opacity:.4;text-decoration:line-through}
+.pick{position:absolute;left:10px;right:10px;bottom:10px;background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:10px 12px;display:none;flex-direction:column;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.pick.on{display:flex}
+.pick .top{display:flex;align-items:center;gap:8px;min-width:0}
+.pick strong{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .why{font-size:13px;color:var(--no);background:var(--nobg);padding:6px 8px;border-radius:8px;line-height:1.4}
+.pick .row{display:flex;gap:8px}
+.pick .row button{flex:1}
+.btn{font:inherit;font-size:15px;padding:10px 14px;border-radius:12px;border:1px solid var(--rule);background:var(--soft);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:700}
+.btn.go{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700;font-size:17px;width:100%;padding:14px}
+.x{border:0;background:transparent;color:var(--muted);font-size:20px;cursor:pointer;width:32px;height:32px}
+.result{margin-top:12px;padding:16px}
+.sum{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.big{font-size:40px;font-weight:700;line-height:1;letter-spacing:-0.02em}
+.big small{font-size:18px;font-weight:500;margin-left:3px}
+.meta{color:var(--muted);font-size:14px;display:flex;gap:4px 14px;flex-wrap:wrap}
+.meta b{color:var(--ink);font-weight:500}
+.leg{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:12px}
+.lbar{display:flex;flex-direction:column;align-items:center}
+.lbar .bar{flex:1;width:8px;min-height:24px}
+.lbar .walkbar{flex:1;width:0;border-left:4px dotted var(--muted);min-height:24px}
+.stn{font-size:18px;font-weight:700;margin:4px 0 0;overflow-wrap:anywhere}
+.stn .ja{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
+.ride{padding:8px 0 12px;color:var(--muted);font-size:14px}
+.ride .ln{color:var(--ink);font-weight:500;font-size:15px}
+.ride details{margin-top:6px}
+.ride summary{cursor:pointer;color:var(--ink)}
+.ride ol{margin:6px 0 0;padding-left:18px}
+.note{margin-top:8px;background:var(--warnbg);color:var(--warn);font-size:13px;padding:8px 10px;border-radius:10px;line-height:1.45}
+.xfer{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:2px 0 8px;padding:10px 12px;border:1px dashed var(--rule);border-radius:12px;color:var(--muted);font-size:14px}
+a{color:var(--me)}
+.empty{padding:20px 16px;color:var(--muted);font-size:15px;margin-top:12px}
+.err{color:var(--no);font-size:14px;margin:6px 4px 0;min-height:1em}
+.foot{color:var(--muted);font-size:13px;margin:16px 4px 0;line-height:1.5}
+/* trip mode */
+.live{padding:16px;margin-bottom:12px;border-width:2px;border-color:var(--ink)}
+.live .stepof{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.live .instr{font-size:24px;font-weight:700;line-height:1.25;margin:6px 0 4px;display:flex;gap:10px;align-items:flex-start}
+.live .sub{color:var(--muted);font-size:15px}
+.live .now{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.live .now div{background:var(--soft);border-radius:12px;padding:8px 10px}
+.live .now small{display:block;font-size:12px;color:var(--muted)}
+.live .now strong{font-size:20px;font-weight:700}
+.live .acts{display:flex;gap:8px;flex-wrap:wrap}
+.live .acts .btn{flex:1}
+.stops{list-style:none;margin:12px 0 0;padding:0}
+.stops li{display:flex;align-items:center;gap:10px;padding:7px 4px;border-top:1px solid var(--rule);font-size:15px;cursor:pointer}
+.stops li .t{width:14px;height:14px;border-radius:50%;border:3px solid var(--c);flex-shrink:0;background:var(--surface)}
+.stops li.done{color:var(--muted)}
+.stops li.done .t{background:var(--c)}
+.stops li.cur{font-weight:700}
+.stops li.cur .t{box-shadow:0 0 0 4px var(--soft);background:var(--c)}
+.stops li .hint{margin-left:auto;font-size:12px;color:var(--muted);font-weight:400}
+.plan{display:flex;flex-direction:column;gap:0;margin-top:12px}
+.pstep{display:flex;gap:10px;align-items:center;padding:10px 4px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}
+.pstep.cur{color:var(--ink);font-weight:700}
+.pstep.done{text-decoration:line-through;opacity:.6}
+.gps{font-size:12px;color:var(--muted);margin-top:8px}
+@media (prefers-reduced-motion:no-preference){.result,.live{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+<header><h1>Pass route</h1><span class="pass">Tokyo Metro + Toei</span></header>
+
+<div id="planner">
+<div class="panel trip">
+  <span class="rail" aria-hidden="true"></span>
+  <span class="dot" aria-hidden="true"></span>
+  <div class="field"><input id="from" placeholder="From: station, place, address" autocomplete="off" aria-label="From"><div class="sugg" id="sf" role="listbox"></div></div>
+  <button class="iconbtn" id="loc" aria-label="Start from my location" title="My location">◎</button>
+  <span class="dot to" aria-hidden="true"></span>
+  <div class="field sep"><input id="to" placeholder="To: station, place, address or tap map" autocomplete="off" aria-label="To"><div class="sugg" id="st" role="listbox"></div></div>
+  <button class="iconbtn" id="swap" aria-label="Swap" title="Swap">⇅</button>
+</div>
+<div class="err" id="err" role="status"></div>
+<div class="tools">
+  <div class="seg" role="group" aria-label="Route preference">
+    <button id="mFast" aria-pressed="true">Fastest</button>
+    <button id="mFew" aria-pressed="false">Fewer changes</button>
+  </div>
+</div>
+</div>
+
+<div id="livebox"></div>
+
+<div class="panel mapbox">
+  <svg id="map" role="img" aria-label="Map of covered subway lines and lines to avoid"></svg>
+  <button class="legend" id="legend" aria-label="Toggle lines not covered"><span><i></i>Your pass</span><span class="r2"><i class="no"></i>Don’t take</span><span>◆ Places</span></button>
+  <div class="mapctl"><button id="follow" aria-label="Follow my position" aria-pressed="false">◎</button><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zfit" aria-label="Fit route">⤢</button></div>
+  <div class="pick" id="pick"><div class="top"><strong id="pickName"></strong><button class="x" id="pickX" aria-label="Close">×</button></div><div class="why" id="pickWhy" hidden></div><div class="row"><button class="btn" id="pickFrom">Start here</button><button class="btn primary" id="pickTo">Go here</button></div></div>
+</div>
+
+<div id="out"></div>
+<p class="foot" id="foot">Times are estimates: trains from distance plus transfer time, walking at 4.8 km/h with a 25% detour allowance. Red dashed lines are JR and private railways your pass doesn’t cover.</p>
+</div>
+
+<script>
+const LINES=[{"id":"Ginza","code":"G","name":"Ginza Line","op":"Tokyo Metro","color":"#FF9500","st":[["Shibuya","Shibuya",139.70244,35.659,"渋谷"],["Omote-sando","Omote-sando",139.71247,35.66504,"表参道"],["Gaiemmae","Gaiemmae",139.71783,35.67037,"外苑前"],["Aoyama-itchome","Aoyama-itchome",139.72414,35.67279,"青山一丁目"],["Akasaka-mitsuke","Akasaka-mitsuke",139.73735,35.67685,"赤坂見附"],["Tameike-sanno","Tameike-sanno",139.74194,35.67151,"溜池山王"],["Toranomon","Toranomon",139.75012,35.67016,"虎ノ門"],["Shimbashi","Shimbashi",139.75851,35.66738,"新橋"],["Ginza","Ginza",139.76537,35.6715,"銀座"],["Kyobashi","Kyobashi",139.77011,35.6767,"京橋"],["Nihombashi","Nihombashi",139.77334,35.68188,"日本橋"],["Mitsukoshimae","Mitsukoshimae",139.77358,35.68717,"三越前"],["Kanda","Kanda",139.77089,35.69371,"神田"],["Suehirocho","Suehirocho",139.77176,35.70278,"末広町"],["Ueno-hirokoji","Ueno-hirokoji",139.77301,35.70777,"上野広小路"],["Ueno","Ueno",139.77608,35.7118,"上野"],["Inaricho","Inaricho",139.78267,35.71134,"稲荷町"],["Tawaramachi","Tawaramachi",139.79077,35.70984,"田原町"],["Asakusa","Asakusa",139.79777,35.71075,"浅草"]]},{"id":"Marunouchi","code":"M","name":"Marunouchi Line","op":"Tokyo Metro","color":"#F62E36","st":[["Ogikubo","Ogikubo",139.61976,35.70417,"荻窪"],["Minami-asagaya","Minami-asagaya",139.63557,35.69946,"南阿佐ケ谷"],["Shin-koenji","Shin-koenji",139.64851,35.69786,"新高円寺"],["Higashi-koenji","Higashi-koenji",139.6583,35.69797,"東高円寺"],["Shin-nakano","Shin-nakano",139.66951,35.69747,"新中野"],["Nakano-sakaue","Nakano-sakaue",139.68221,35.69709,"中野坂上"],["Nishi-shinjuku","Nishi-shinjuku",139.69256,35.69452,"西新宿"],["Shinjuku","Shinjuku",139.70055,35.69245,"新宿"],["Shinjuku-sanchome","Shinjuku-sanchome",139.70421,35.69118,"新宿三丁目"],["Shinjuku-gyoemmae","Shinjuku-gyoemmae",139.71091,35.68852,"新宿御苑前"],["Yotsuya-sanchome","Yotsuya-sanchome",139.72057,35.68797,"四谷三丁目"],["Yotsuya","Yotsuya",139.72997,35.68455,"四ツ谷"],["Akasaka-mitsuke","Akasaka-mitsuke",139.73735,35.67685,"赤坂見附"],["Kokkai-gijidomae","Kokkai-gijidomae",139.74557,35.67454,"国会議事堂前"],["Kasumigaseki","Kasumigaseki",139.75268,35.67424,"霞ケ関"],["Ginza","Ginza",139.76318,35.67289,"銀座"],["Tokyo","Tokyo",139.7648,35.68194,"東京"],["Otemachi","Otemachi",139.7662,35.68688,"大手町"],["Awajicho","Awajicho",139.76746,35.69487,"淡路町"],["Ochanomizu","Ochanomizu",139.76403,35.70057,"御茶ノ水"],["Hongo-sanchome","Hongo-sanchome",139.76015,35.70673,"本郷三丁目"],["Korakuen","Korakuen",139.75125,35.70734,"後楽園"],["Myogadani","Myogadani",139.7369,35.7172,"茗荷谷"],["Shin-otsuka","Shin-otsuka",139.72993,35.72579,"新大塚"],["Ikebukuro","Ikebukuro",139.71115,35.73034,"池袋"]]},{"id":"MarunouchiBranch","code":"Mb","name":"Marunouchi Line (branch)","op":"Tokyo Metro","color":"#F62E36","st":[["Honancho","Honancho",139.65794,35.68351,"方南町"],["Nakano-fujimicho","Nakano-fujimicho",139.66724,35.69064,"中野富士見町"],["Nakano-Shimbashi","Nakano-Shimbashi",139.674,35.69168,"中野新橋"],["Nakano-sakaue","Nakano-sakaue",139.68221,35.69709,"中野坂上"]]},{"id":"Hibiya","code":"H","name":"Hibiya Line","op":"Tokyo Metro","color":"#9C9C93","st":[["Naka-meguro","Naka-meguro",139.69912,35.64431,"中目黒"],["Ebisu","Ebisu",139.7087,35.64704,"恵比寿"],["Hiro-o","Hiro-o",139.72221,35.6515,"広尾"],["Roppongi","Roppongi",139.73116,35.6628,"六本木"],["Kamiyacho","Kamiyacho",139.74505,35.66296,"神谷町"],["Toranomon-hills","Toranomon-hills",139.74776,35.66747,"虎ノ門ヒルズ"],["Kasumigaseki","Kasumigaseki",139.75106,35.67388,"霞ケ関"],["Hibiya","Hibiya",139.7606,35.67427,"日比谷"],["Ginza","Ginza",139.76401,35.67198,"銀座"],["Higashi-ginza","Higashi-ginza",139.76763,35.66913,"東銀座"],["Tsukiji","Tsukiji",139.77247,35.66793,"築地"],["Hatchobori","Hatchobori",139.77733,35.67537,"八丁堀"],["Kayabacho","Kayabacho",139.77962,35.67908,"茅場町"],["Ningyocho","Ningyocho",139.78234,35.68626,"人形町"],["Kodemmacho","Kodemmacho",139.77876,35.69042,"小伝馬町"],["Akihabara","Akihabara",139.77553,35.69797,"秋葉原"],["Naka-okachimachi","Naka-okachimachi",139.77619,35.70665,"仲御徒町"],["Ueno","Ueno",139.77706,35.71156,"上野"],["Iriya","Iriya",139.78447,35.72057,"入谷"],["Minowa","Minowa",139.7913,35.72955,"三ノ輪"],["Minami-senju","Minami-senju",139.79878,35.73231,"南千住"],["Kita-senju","Kita-senju",139.80556,35.74981,"北千住"]]},{"id":"Tozai","code":"T","name":"Tozai Line","op":"Tokyo Metro","color":"#009BBF","st":[["Nakano","Nakano",139.66594,35.70573,"中野"],["Ochiai","Ochiai",139.68597,35.71064,"落合"],["Takadanobaba","Takadanobaba",139.70505,35.71328,"高田馬場"],["Waseda","Waseda",139.72119,35.7058,"早稲田"],["Kagurazaka","Kagurazaka",139.73452,35.70387,"神楽坂"],["Iidabashi","Iidabashi",139.74652,35.7014,"飯田橋"],["Kudanshita","Kudanshita",139.75126,35.69609,"九段下"],["Takebashi","Takebashi",139.75767,35.69044,"竹橋"],["Otemachi","Otemachi",139.76603,35.6847,"大手町"],["Nihombashi","Nihombashi",139.7741,35.68238,"日本橋"],["Kayabacho","Kayabacho",139.77927,35.68035,"茅場町"],["Monzen-nakacho","Monzen-nakacho",139.7961,35.67189,"門前仲町"],["Kiba","Kiba",139.80712,35.66936,"木場"],["Toyocho","Toyocho",139.81768,35.66959,"東陽町"],["Minami-sunamachi","Minami-sunamachi",139.83169,35.66842,"南砂町"],["Nishi-kasai","Nishi-kasai",139.8596,35.66456,"西葛西"],["Kasai","Kasai",139.87253,35.66362,"葛西"],["Urayasu","Urayasu",139.89324,35.6659,"浦安"],["Minami-gyotoku","Minami-gyotoku",139.90228,35.67273,"南行徳"],["Gyotoku","Gyotoku",139.91419,35.68262,"行徳"],["Myoden","Myoden",139.92429,35.69101,"妙典"],["Baraki-nakayama","Baraki-nakayama",139.94191,35.7033,"原木中山"],["Nishi-funabashi","Nishi-funabashi",139.95925,35.70713,"西船橋"]]},{"id":"Chiyoda","code":"C","name":"Chiyoda Line","op":"Tokyo Metro","color":"#00BB85","st":[["Yoyogi-uehara","Yoyogi-uehara",139.67968,35.66906,"代々木上原"],["Yoyogi-koen","Yoyogi-koen",139.68979,35.6691,"代々木公園"],["Meiji-jingumae","Meiji-jingumae (Harajuku)",139.70394,35.66912,"明治神宮前〈原宿〉"],["Omote-sando","Omote-sando",139.71135,35.66565,"表参道"],["Nogizaka","Nogizaka",139.72623,35.66659,"乃木坂"],["Akasaka","Akasaka",139.73641,35.6721,"赤坂"],["Kokkai-gijidomae","Kokkai-gijidomae",139.74319,35.67357,"国会議事堂前"],["Kasumigaseki","Kasumigaseki",139.75177,35.67256,"霞ケ関"],["Hibiya","Hibiya",139.75877,35.67395,"日比谷"],["Nijubashimae","Nijubashimae",139.76178,35.6805,"二重橋前〈丸の内〉"],["Otemachi","Otemachi",139.76328,35.68525,"大手町"],["Shin-ochanomizu","Shin-ochanomizu",139.76545,35.69693,"新御茶ノ水"],["Yushima","Yushima",139.76998,35.70681,"湯島"],["Nezu","Nezu",139.76575,35.71733,"根津"],["Sendagi","Sendagi",139.7633,35.72575,"千駄木"],["Nishi-nippori","Nishi-nippori",139.76689,35.73235,"西日暮里"],["Machiya","Machiya",139.78005,35.74207,"町屋"],["Kita-senju","Kita-senju",139.8044,35.7492,"北千住"],["Ayase","Ayase",139.82481,35.76212,"綾瀬"],["Kita-ayase","Kita-ayase",139.8321,35.77689,"北綾瀬"]]},{"id":"Yurakucho","code":"Y","name":"Yurakucho Line","op":"Tokyo Metro","color":"#C1A470","st":[["Wakoshi","Wakoshi",139.61286,35.78835,"和光市"],["Chikatetsu-narimasu","Chikatetsu-narimasu",139.63117,35.77674,"地下鉄成増"],["Chikatetsu-akatsuka","Chikatetsu-akatsuka",139.644,35.76998,"地下鉄赤塚"],["Heiwadai","Heiwadai",139.6543,35.75756,"平和台"],["Hikawadai","Hikawadai",139.66547,35.74962,"氷川台"],["Kotake-mukaihara","Kotake-mukaihara",139.67952,35.74339,"小竹向原"],["Senkawa","Senkawa",139.6894,35.73817,"千川"],["Kanamecho","Kanamecho",139.69848,35.73322,"要町"],["Ikebukuro","Ikebukuro",139.71088,35.72919,"池袋"],["Higashi-ikebukuro","Higashi-ikebukuro",139.71886,35.72595,"東池袋"],["Gokokuji","Gokokuji",139.72745,35.71918,"護国寺"],["Edogawabashi","Edogawabashi",139.73357,35.70954,"江戸川橋"],["Iidabashi","Iidabashi",139.74321,35.70134,"飯田橋"],["Ichigaya","Ichigaya",139.73689,35.69258,"市ケ谷"],["Kojimachi","Kojimachi",139.73735,35.68478,"麴町"],["Nagatacho","Nagatacho",139.74177,35.67789,"永田町"],["Sakuradamon","Sakuradamon",139.75189,35.67746,"桜田門"],["Yurakucho","Yurakucho",139.76229,35.67597,"有楽町"],["Ginza-itchome","Ginza-itchome",139.76679,35.67452,"銀座一丁目"],["Shintomicho","Shintomicho",139.77359,35.67053,"新富町"],["Tsukishima","Tsukishima",139.7844,35.66471,"月島"],["Toyosu","Toyosu",139.79599,35.65515,"豊洲"],["Tatsumi","Tatsumi",139.81033,35.64578,"辰巳"],["Shin-kiba","Shin-kiba",139.82661,35.64578,"新木場"]]},{"id":"Hanzomon","code":"Z","name":"Hanzomon Line","op":"Tokyo Metro","color":"#8F76D6","st":[["Shibuya","Shibuya",139.70103,35.65945,"渋谷"],["Omote-sando","Omote-sando",139.71247,35.66504,"表参道"],["Aoyama-itchome","Aoyama-itchome",139.72414,35.67279,"青山一丁目"],["Nagatacho","Nagatacho",139.73887,35.67841,"永田町"],["Hanzomon","Hanzomon",139.74169,35.68538,"半蔵門"],["Kudanshita","Kudanshita",139.75112,35.6955,"九段下"],["Jimbocho","Jimbocho",139.75756,35.69602,"神保町"],["Otemachi","Otemachi",139.7649,35.68675,"大手町"],["Mitsukoshimae","Mitsukoshimae",139.77308,35.68493,"三越前"],["Suitengumae","Suitengumae",139.78517,35.683,"水天宮前"],["Kiyosumi-shirakawa","Kiyosumi-shirakawa",139.79984,35.68212,"清澄白河"],["Sumiyoshi","Sumiyoshi",139.81567,35.6887,"住吉"],["Kinshicho","Kinshicho",139.81496,35.69744,"錦糸町"],["Oshiage","Oshiage (Skytree)",139.81374,35.70847,"押上〈スカイツリー前〉"]]},{"id":"Namboku","code":"N","name":"Namboku Line","op":"Tokyo Metro","color":"#00AC9B","st":[["Meguro","Meguro",139.71546,35.63297,"目黒"],["Shirokanedai","Shirokanedai",139.72601,35.63785,"白金台"],["Shirokane-takanawa","Shirokane-takanawa",139.73434,35.64328,"白金高輪"],["Azabu-juban","Azabu-juban",139.73704,35.65481,"麻布十番"],["Roppongi-itchome","Roppongi-itchome",139.7389,35.66508,"六本木一丁目"],["Tameike-sanno","Tameike-sanno",139.74129,35.67309,"溜池山王"],["Nagatacho","Nagatacho",139.73929,35.67834,"永田町"],["Yotsuya","Yotsuya",139.72968,35.68608,"四ツ谷"],["Ichigaya","Ichigaya",139.73632,35.69289,"市ケ谷"],["Iidabashi","Iidabashi",139.74372,35.70153,"飯田橋"],["Korakuen","Korakuen",139.75179,35.70839,"後楽園"],["Todaimae","Todaimae",139.75788,35.71801,"東大前"],["Hon-komagome","Hon-komagome",139.75381,35.72436,"本駒込"],["Komagome","Komagome",139.74691,35.73591,"駒込"],["Nishigahara","Nishigahara",139.74226,35.74594,"西ケ原"],["Oji","Oji",139.73736,35.75447,"王子"],["Oji-kamiya","Oji-kamiya",139.73564,35.76529,"王子神谷"],["Shimo","Shimo",139.7325,35.77802,"志茂"],["Akabane-iwabuchi","Akabane-iwabuchi",139.72211,35.78336,"赤羽岩淵"]]},{"id":"Fukutoshin","code":"F","name":"Fukutoshin Line","op":"Tokyo Metro","color":"#9C5E31","st":[["Wakoshi","Wakoshi",139.61286,35.78835,"和光市"],["Chikatetsu-narimasu","Chikatetsu-narimasu",139.63117,35.77674,"地下鉄成増"],["Chikatetsu-akatsuka","Chikatetsu-akatsuka",139.644,35.76998,"地下鉄赤塚"],["Heiwadai","Heiwadai",139.6543,35.75756,"平和台"],["Hikawadai","Hikawadai",139.66547,35.74962,"氷川台"],["Kotake-mukaihara","Kotake-mukaihara",139.67952,35.74339,"小竹向原"],["Senkawa","Senkawa",139.6894,35.73817,"千川"],["Kanamecho","Kanamecho",139.69848,35.73322,"要町"],["Ikebukuro","Ikebukuro",139.70894,35.73114,"池袋"],["Zoshigaya","Zoshigaya",139.71472,35.7202,"雑司が谷"],["Nishi-waseda","Nishi-waseda",139.70912,35.70781,"西早稲田"],["Higashi-shinjuku","Higashi-shinjuku",139.70785,35.69983,"東新宿"],["Shinjuku-sanchome","Shinjuku-sanchome",139.70473,35.69061,"新宿三丁目"],["Kita-sando","Kita-sando",139.70547,35.6785,"北参道"],["Meiji-jingumae","Meiji-jingumae (Harajuku)",139.70524,35.66821,"明治神宮前〈原宿〉"],["Shibuya","Shibuya",139.70257,35.65909,"渋谷"]]},{"id":"Asakusa","code":"A","name":"Asakusa Line","op":"Toei","color":"#E85298","st":[["Nishi-magome","Nishi-magome",139.70609,35.58705,"西馬込"],["Magome","Magome",139.71188,35.59677,"馬込"],["Nakanobu","Nakanobu",139.71365,35.60527,"中延"],["Togoshi","Togoshi",139.71632,35.61442,"戸越"],["Gotanda","Gotanda",139.72396,35.62688,"五反田"],["Takanawadai","Takanawadai",139.73038,35.63175,"高輪台"],["Sengakuji","Sengakuji",139.73999,35.63871,"泉岳寺"],["Mita","Mita",139.74688,35.64675,"三田"],["Daimon","Daimon",139.75468,35.65687,"大門"],["Shimbashi","Shimbashi",139.75934,35.66539,"新橋"],["Higashi-ginza","Higashi-ginza",139.76735,35.66992,"東銀座"],["Takaracho","Takaracho",139.77197,35.67561,"宝町"],["Nihombashi","Nihombashi",139.77581,35.6818,"日本橋"],["Ningyocho","Ningyocho",139.78228,35.68635,"人形町"],["Higashi-nihombashi","Higashi-nihombashi",139.78489,35.69212,"東日本橋"],["Asakusabashi","Asakusabashi",139.78634,35.69749,"浅草橋"],["Kuramae","Kuramae",139.79086,35.70313,"蔵前"],["Asakusa","Asakusa",139.79654,35.70892,"浅草"],["Honjo-azumabashi","Honjo-azumabashi",139.8044,35.70857,"本所吾妻橋"],["Oshiage","Oshiage",139.81299,35.71082,"押上"]]},{"id":"Mita","code":"I","name":"Mita Line","op":"Toei","color":"#0079C2","st":[["Meguro","Meguro",139.71546,35.63297,"目黒"],["Shirokanedai","Shirokanedai",139.72601,35.63785,"白金台"],["Shirokane-takanawa","Shirokane-takanawa",139.73434,35.64328,"白金高輪"],["Mita","Mita",139.749,35.64865,"三田"],["Shibakoen","Shibakoen",139.74985,35.65419,"芝公園"],["Onarimon","Onarimon",139.75137,35.66077,"御成門"],["Uchisaiwaicho","Uchisaiwaicho",139.75533,35.66934,"内幸町"],["Hibiya","Hibiya",139.76027,35.67659,"日比谷"],["Otemachi","Otemachi",139.7628,35.68409,"大手町"],["Jimbocho","Jimbocho",139.75821,35.69533,"神保町"],["Suidobashi","Suidobashi",139.75515,35.70346,"水道橋"],["Kasuga","Kasuga",139.75329,35.70953,"春日"],["Hakusan","Hakusan",139.75213,35.72168,"白山"],["Sengoku","Sengoku",139.74498,35.72777,"千石"],["Sugamo","Sugamo",139.73815,35.73379,"巣鴨"],["Nishi-sugamo","Nishi-sugamo",139.7287,35.74357,"西巣鴨"],["Shin-itabashi","Shin-itabashi",139.71981,35.74877,"新板橋"],["Itabashi-kuyakushomae","Itabashi-kuyakushomae",139.71012,35.75137,"板橋区役所前"],["Itabashihoncho","Itabashihoncho",139.70554,35.76131,"板橋本町"],["Motohasunuma","Motohasunuma",139.70241,35.76857,"本蓮沼"],["Shimura-sakaue","Shimura-sakaue",139.6951,35.77608,"志村坂上"],["Shimura-sanchome","Shimura-sanchome",139.68575,35.77747,"志村三丁目"],["Hasune","Hasune",139.67895,35.78426,"蓮根"],["Nishidai","Nishidai",139.67287,35.78707,"西台"],["Takashimadaira","Takashimadaira",139.66136,35.78891,"高島平"],["Shin-takashimadaira","Shin-takashimadaira",139.65405,35.79029,"新高島平"],["Nishi-takashimadaira","Nishi-takashimadaira",139.64542,35.79196,"西高島平"]]},{"id":"Shinjuku","code":"S","name":"Shinjuku Line","op":"Toei","color":"#6CBB5A","st":[["Shinjuku","Shinjuku",139.69842,35.68843,"新宿"],["Shinjuku-sanchome","Shinjuku-sanchome",139.70679,35.69102,"新宿三丁目"],["Akebonobashi","Akebonobashi",139.72232,35.6924,"曙橋"],["Ichigaya","Ichigaya",139.73759,35.69153,"市ヶ谷"],["Kudanshita","Kudanshita",139.75174,35.69555,"九段下"],["Jimbocho","Jimbocho",139.75798,35.69597,"神保町"],["Ogawamachi","Ogawamachi",139.76645,35.69501,"小川町"],["Iwamotocho","Iwamotocho",139.77511,35.69561,"岩本町"],["Bakuro-yokoyama","Bakuro-yokoyama",139.78301,35.69193,"馬喰横山"],["Hamacho","Hamacho",139.78772,35.6886,"浜町"],["Morishita","Morishita",139.79662,35.68798,"森下"],["Kikukawa","Kikukawa",139.80606,35.6884,"菊川"],["Sumiyoshi","Sumiyoshi",139.81572,35.68904,"住吉"],["Nishi-ojima","Nishi-ojima",139.82623,35.68939,"西大島"],["Ojima","Ojima",139.83471,35.68975,"大島"],["Higashi-ojima","Higashi-ojima",139.84725,35.68996,"東大島"],["Funabori","Funabori",139.86396,35.68376,"船堀"],["Ichinoe","Ichinoe",139.88259,35.68599,"一之江"],["Mizue","Mizue",139.8977,35.69351,"瑞江"],["Shinozaki","Shinozaki",139.9038,35.70602,"篠崎"],["Motoyawata","Motoyawata",139.92661,35.72282,"本八幡"]]},{"id":"Oedo","code":"E","name":"Oedo Line","op":"Toei","color":"#B6007A","st":[["Tochomae","Tochomae",139.69268,35.69061,"都庁前"],["Shinjuku-nishiguchi","Shinjuku-nishiguchi",139.69912,35.69337,"新宿西口"],["Higashi-shinjuku","Higashi-shinjuku",139.70743,35.69796,"東新宿"],["Wakamatsu-kawada","Wakamatsu-kawada",139.71804,35.69919,"若松河田"],["Ushigome-yanagicho","Ushigome-yanagicho",139.72504,35.6995,"牛込柳町"],["Ushigome-kagurazaka","Ushigome-kagurazaka",139.73589,35.70091,"牛込神楽坂"],["Iidabashi","Iidabashi",139.74526,35.70295,"飯田橋"],["Kasuga","Kasuga",139.75249,35.70849,"春日"],["Hongo-sanchome","Hongo-sanchome",139.76052,35.70751,"本郷三丁目"],["Ueno-okachimachi","Ueno-okachimachi",139.77335,35.70795,"上野御徒町"],["Shin-okachimachi","Shin-okachimachi",139.78217,35.70701,"新御徒町"],["Kuramae","Kuramae",139.79224,35.70559,"蔵前"],["Ryogoku","Ryogoku",139.79747,35.69681,"両国"],["Morishita","Morishita",139.79825,35.68793,"森下"],["Kiyosumi-shirakawa","Kiyosumi-shirakawa",139.79876,35.68236,"清澄白河"],["Monzen-nakacho","Monzen-nakacho",139.79512,35.67277,"門前仲町"],["Tsukishima","Tsukishima",139.78391,35.66376,"月島"],["Kachidoki","Kachidoki",139.77714,35.65893,"勝どき"],["Tsukijishijo","Tsukijishijo",139.76693,35.66492,"築地市場"],["Shiodome","Shiodome",139.76022,35.66319,"汐留"],["Daimon","Daimon",139.7557,35.65667,"大門"],["Akabanebashi","Akabanebashi",139.74399,35.65499,"赤羽橋"],["Azabu-juban","Azabu-juban",139.73633,35.65645,"麻布十番"],["Roppongi","Roppongi",139.73135,35.66411,"六本木"],["Aoyama-itchome","Aoyama-itchome",139.72393,35.67307,"青山一丁目"],["Kokuritsu-kyogijo","Kokuritsu-kyogijo",139.71467,35.6799,"国立競技場"],["Yoyogi","Yoyogi",139.7016,35.6835,"代々木"],["Shinjuku","Shinjuku",139.69902,35.68846,"新宿"],["Tochomae","Tochomae",139.69271,35.69049,"都庁前"],["Nishi-shinjuku-gochome","Nishi-shinjuku-gochome",139.68455,35.68989,"西新宿五丁目"],["Nakano-sakaue","Nakano-sakaue",139.6829,35.69789,"中野坂上"],["Higashi-nakano","Higashi-nakano",139.68311,35.70716,"東中野"],["Nakai","Nakai",139.6863,35.71393,"中井"],["Ochiai-minami-nagasaki","Ochiai-minami-nagasaki",139.68339,35.72344,"落合南長崎"],["Shin-egota","Shin-egota",139.6705,35.73258,"新江古田"],["Nerima","Nerima",139.65476,35.73741,"練馬"],["Toshimaen","Toshimaen",139.64912,35.74171,"豊島園"],["Nerima-kasugacho","Nerima-kasugacho",139.6403,35.75141,"練馬春日町"],["Hikarigaoka","Hikarigaoka",139.6289,35.75853,"光が丘"]]}];
+const AVOID=[{"n":"JR Yamanote","s":[[["Osaki",139.72816,35.62019],["Gotanda",139.72344,35.6263],["Meguro",139.71566,35.63352],["Ebisu",139.70983,35.64658],["Shibuya",139.70149,35.65796],["Harajuku",139.70261,35.67129],["Yoyogi",139.70205,35.68352],["Shinjuku",139.70038,35.69018],["Shin-Okubo",139.7001,35.70074],["Takadanobaba",139.70371,35.71268],["Mejiro",139.70621,35.72018],["Ikebukuro",139.71094,35.7299],["Otsuka",139.72788,35.73157],["Sugamo",139.74032,35.73383],["Komagome",139.74788,35.73684],["Tabata",139.76149,35.7374],["Nishi-Nippori",139.76676,35.73184],["Nippori",139.77093,35.72712],["Uguisudani",139.77787,35.72129],["Ueno",139.77676,35.71351],["Okachimachi",139.77454,35.70713],["Akihabara",139.77288,35.69824],["Kanda",139.77065,35.69157],["Tokyo",139.76704,35.6813],["Yurakucho",139.76288,35.67491],["Shimbashi",139.75788,35.6663],["Hamamatsucho",139.75705,35.65546],["Tamachi",139.7476,35.64574],["Takanawa Gateway",139.74066,35.6354],["Shinagawa",139.73871,35.6288],["Osaki",139.72816,35.62019],["Osaki",139.72816,35.62019]]]},{"n":"JR Chuo Rapid","s":[[["Tokyo",139.76704,35.6813],["Kanda",139.77065,35.69157],["Ochanomizu",139.7651,35.69935],["Yotsuya",139.73038,35.6849],["Shinjuku",139.70038,35.69018],["Nakano",139.66594,35.70573],["Koenji",139.64955,35.70518],["Asagaya",139.63566,35.70462],["Ogikubo",139.62011,35.70434],["Nishi-Ogikubo",139.59928,35.70351]]]},{"n":"JR Chuo-Sobu","s":[[["Funabashi",139.9848,35.70158],["Nishi-Funabashi",139.95925,35.70713],["Shimosa-Nakayama",139.94286,35.71407],["Moto-Yawata",139.92731,35.72074],["Ichikawa",139.90786,35.72879],["Koiwa",139.88175,35.73324],["Shin-Koiwa",139.85787,35.71685],["Hirai",139.84231,35.70629],["Kameido",139.82648,35.69713],["Kinshicho",139.81398,35.69657],["Ryogoku",139.79315,35.69574],["Asakusabashi",139.78399,35.6974],["Akihabara",139.77288,35.69824],["Ochanomizu",139.7651,35.69935],["Suidobashi",139.75341,35.70207],["Iidabashi",139.74482,35.70157],["Ichigaya",139.7351,35.69102],["Yotsuya",139.73038,35.6849],["Shinanomachi",139.72094,35.67991],["Sendagaya",139.71153,35.68119],["Yoyogi",139.70205,35.68352],["Shinjuku",139.70038,35.69018],["Okubo",139.69733,35.70046],["Higashi-Nakano",139.68483,35.70601],["Nakano",139.66594,35.70573],["Koenji",139.64955,35.70518],["Asagaya",139.63566,35.70462],["Ogikubo",139.62011,35.70434],["Nishi-Ogikubo",139.59928,35.70351]]]},{"n":"JR Keihin-Tohoku","s":[[["Nishi-Kawaguchi",139.70399,35.81544],["Kawaguchi",139.71732,35.80156],["Akabane",139.72093,35.77767],["Higashi-Jujo",139.72677,35.76378],["Oji",139.73815,35.75212],["Kami-Nakazato",139.74593,35.74684],["Tabata",139.76149,35.7374],["Nishi-Nippori",139.76676,35.73184],["Nippori",139.77093,35.72712],["Uguisudani",139.77787,35.72129],["Ueno",139.77676,35.71351],["Okachimachi",139.77454,35.70713],["Akihabara",139.77288,35.69824],["Kanda",139.77065,35.69157],["Tokyo",139.76704,35.6813],["Yurakucho",139.76288,35.67491],["Shimbashi",139.75788,35.6663],["Hamamatsucho",139.75705,35.65546],["Tamachi",139.7476,35.64574],["Takanawa Gateway",139.74066,35.6354],["Shinagawa",139.73871,35.6288],["Oimachi",139.73483,35.60658],["Omori",139.72788,35.5888],["Kamata",139.71566,35.56214]]]},{"n":"JR Saikyo","s":[[["Osaki",139.72816,35.62019],["Ebisu",139.70983,35.64658],["Shibuya",139.70149,35.65796],["Shinjuku",139.70038,35.69018],["Ikebukuro",139.71094,35.7299],["Itabashi",139.71899,35.7449],["Jujo",139.7222,35.76034],["Akabane",139.72093,35.77767],["Kita-Akabane",139.70566,35.78684],["Ukimafunado",139.69121,35.791],["Toda-Koen",139.67816,35.80795],["Toda",139.66927,35.81767]]]},{"n":"JR Sobu Rapid","s":[[["Tokyo",139.76704,35.6813],["Shin-Nihombashi",139.77424,35.68902],["Bakurocho",139.78232,35.69324],["Kinshicho",139.81398,35.69657],["Shin-Koiwa",139.85787,35.71685],["Ichikawa",139.90786,35.72879],["Funabashi",139.9848,35.70158]]]},{"n":"JR Keiyo","s":[[["Tokyo",139.76704,35.6813],["Hatchobori",139.77799,35.67462],["Etchujima",139.79315,35.66713],["Shiomi",139.81676,35.6588],["Shin-Kiba",139.82648,35.64602],["Kasairinkaikoen",139.86148,35.64436],["Maihama",139.8837,35.63603],["Shin-Urayasu",139.91231,35.64936],["Ichikawashiohama",139.92314,35.6663],["Futamatashimmachi",139.95925,35.69102]]]},{"n":"JR Joban","s":[[["Shinagawa",139.73871,35.6288],["Shimbashi",139.75788,35.6663],["Tokyo",139.76704,35.6813],["Ueno",139.77676,35.71351],["Nippori",139.77093,35.72712],["Mikawashima",139.77676,35.73323],["Minami-Senju",139.79926,35.73407],["Kita-Senju",139.80482,35.7499],["Matsudo",139.90064,35.78434]]]},{"n":"JR Tokaido","s":[[["Tokyo",139.76704,35.6813],["Shimbashi",139.75788,35.6663],["Shinagawa",139.73871,35.6288]]]},{"n":"Rinkai","s":[[["Shin-kiba",139.82678,35.64604],["Shinonome",139.80328,35.6406],["Kokusai-tenjijo",139.79163,35.63457],["Tokyo Teleport",139.77885,35.62754],["Tennozu Isle",139.75084,35.62038],["Shinagawa Seaside",139.74967,35.60897],["Oimachi",139.73474,35.60741],["Osaki",139.72816,35.62019]]]},{"n":"Yurikamome","s":[[["Shimbashi",139.75964,35.66554],["Shiodome",139.75983,35.66281],["Takeshiba",139.76192,35.654],["Hinode",139.75908,35.64923],["Shibaura-futō",139.75781,35.64178],["Odaiba-kaihinkōen",139.77878,35.6299],["Daiba",139.77142,35.62591],["Tokyo International Cruise Terminal",139.77309,35.62135],["Telecom Center",139.77939,35.61756],["Aomi",139.78131,35.62479],["Tokyo Big Sight",139.79134,35.63025],["Ariake",139.79325,35.63468],["Ariake-tennis-no-mori",139.78887,35.63998],["Shijō-mae",139.78565,35.64569],["Shin-Toyosu",139.79001,35.64871],["Toyosu",139.79546,35.65374]]]},{"n":"Tokyo Monorail","s":[[["Monorail Hamamatsucho",139.75506,35.65579],["Tennozu Isle",139.75079,35.62274],["Oi-Keibajo-Mae",139.74705,35.59502],["Ryutsu Center",139.74916,35.58145],["Showajima",139.7499,35.57068]]]},{"n":"Keio","s":[[["Shinjuku",139.69916,35.69019],["Sasazuka",139.66718,35.67366],["Daitabashi",139.6594,35.67108],["Meidaimae",139.65056,35.66836],["Shimo-takaido",139.64203,35.66611],["Sakurajōsui",139.63146,35.66764],["Kami-kitazawa",139.62342,35.66884],["Hachiman-yama",139.61448,35.67008],["Roka-kōen",139.60825,35.67052],["Chitose-karasuyama",139.60038,35.66784],["Sengawa",139.58524,35.66238]]]},{"n":"Keio Inokashira","s":[[["Shibuya",139.69975,35.65853],["Shinsen",139.69313,35.65717],["Komaba-tōdaimae",139.68408,35.65867],["Ikenoue",139.67346,35.66037],["Shimo-kitazawa",139.66657,35.6616],["Shindaita",139.66139,35.6625],["Higashi-matsubara",139.65569,35.66264],["Meidaimae",139.65038,35.66908],["Eifukuchō",139.64267,35.67622],["Nishi-eifuku",139.63516,35.67888],["Hamadayama",139.62758,35.68158],["Takaido",139.61523,35.68326],["Fujimigaoka",139.6072,35.68481],["Kugayama",139.59932,35.68814],["Mitakadai",139.5893,35.69205],["Inokashira-kōen",139.58312,35.6973]]]},{"n":"Keikyu","s":[[["Sengakuji",139.73999,35.63871],["Shinagawa",139.73802,35.62824],["Kitashinagawa",139.7392,35.62207],["Shimbamba",139.74137,35.61763],["Aomono-yokochō",139.74277,35.6095],["Samezu",139.74276,35.60531],["Tachiaigawa",139.73857,35.59826],["Ōmorikaigan",139.73514,35.58746],["Heiwajima",139.73487,35.57873],["Ōmorimachi",139.73215,35.57259],["Umeyashiki",139.72835,35.5669],["Keikyū Kamata",139.72373,35.56066]]]},{"n":"Keikyu Airport","s":[[["Shinagawa",139.73802,35.62824],["Keikyū Kamata",139.72373,35.56066]]]},{"n":"Keisei","s":[[["Keisei-Ueno",139.7735,35.71094],["Nippori",139.77398,35.73033],["Shim-Mikawashima",139.77393,35.73719],["Machiya",139.78153,35.74234],["Senjuōhashi",139.7967,35.74196],["Keisei-Sekiya",139.81152,35.74372],["Horikirishōbuen",139.8272,35.74742],["Ohanajaya",139.83982,35.74739],["Aoto",139.85597,35.74565],["Keisei-Takasago",139.86726,35.75076],["Keisei-Koiwa",139.8833,35.74201],["Edogawa",139.8958,35.73746],["Kōnodai",139.90246,35.73623],["Ichikawamama",139.91144,35.73101],["Sugano",139.91926,35.72802],["Keisei-Yawata",139.92824,35.72375],["Onigoe",139.93731,35.71967],["Keisei-Nakayama",139.94459,35.71655],["Higashi-Nakayama",139.95235,35.71429],["Keisei-Nishifuna",139.95861,35.71134],["Kaijin",139.97178,35.70565],["Keisei-Funabashi",139.9852,35.69995]]]},{"n":"Keisei Oshiage","s":[[["Oshiage(SKYTREE)",139.81299,35.71082],["Keisei-Hikifune",139.81934,35.7179],["Yahiro",139.82803,35.72705],["Yotsugi",139.83462,35.73167],["Keisei-Tateishi",139.84831,35.73808],["Aoto",139.85597,35.74565]]]},{"n":"Tobu Skytree","s":[[["Asakusa",139.79835,35.71192],["TOKYO SKYTREE",139.80939,35.71047],["Hikifune",139.81667,35.71851],["Higashi-mukojima",139.81933,35.72436],["Kanegafuchi",139.82037,35.73376],["Horikiri",139.81738,35.74334],["Ushida",139.81177,35.74454],["Kita-senju",139.80556,35.74981],["Kosuge",139.81265,35.75869],["Gotanno",139.80963,35.7659],["Umejima",139.79807,35.77235],["Nishiarai",139.79037,35.77728],["Takenotsuka",139.79072,35.79437],["Yatsuka",139.80146,35.81486]]]},{"n":"Tobu Tojo","s":[[["Ikebukuro",139.71117,35.73118],["Kita-ikebukuro",139.71639,35.74033],["Shimo-itabashi",139.71562,35.74507],["Oyama",139.70262,35.74841],["Naka-itabashi",139.69438,35.75628],["Tokiwadai",139.68876,35.7589],["Kami-itabashi",139.67621,35.76362],["Tobu-nerima",139.66254,35.76865],["Shimo-akatsuka",139.64485,35.77048],["Narimasu",139.6329,35.77759],["Wakoshi",139.61286,35.78835],["Asaka",139.6003,35.79676],["Asakadai",139.5873,35.81434]]]},{"n":"Tobu Kameido","s":[[["Hikifune",139.81667,35.71851],["Omurai",139.82761,35.71032],["Higashi-azuma",139.8316,35.70738],["Kameidosuijin",139.83339,35.69994],["Kameido",139.8272,35.69773]]]},{"n":"Seibu Ikebukuro","s":[[["Ikebukuro",139.71171,35.72888],["Shiinamachi",139.69483,35.7266],["Higashi-Nagasaki",139.68301,35.73021],["Ekoda",139.67275,35.73736],["Sakuradai",139.66241,35.73875],["Nerima",139.65356,35.73783],["Nakamurabashi",139.63777,35.7368],["Fujimidai",139.63,35.7359],["Nerima-Takanodai",139.61666,35.7408],["Shakujii-Koen",139.60702,35.74353],["Oizumi-Gakuen",139.58655,35.74952]]]},{"n":"Seibu Shinjuku","s":[[["Seibu-Shinjuku",139.7,35.69624],["Takadanobaba",139.70677,35.71212],["Shimo-Ochiai",139.69515,35.71584],["Nakai",139.68725,35.71505],["Araiyakushi-Mae",139.67189,35.71572],["Numabukuro",139.66385,35.71938],["Nogata",139.65271,35.71958],["Toritsu-Kasei",139.64458,35.72225],["Saginomiya",139.63893,35.72251],["Shimo-Igusa",139.62432,35.72387],["Iogi",139.61465,35.72454],["Kami-Igusa",139.60357,35.72511],["Kami-Shakujii",139.59208,35.72623]]]},{"n":"Odakyu","s":[[["Shinjuku",139.69955,35.69088],["Minami-Shinjuku",139.69851,35.68347],["Sangubashi",139.69355,35.67871],["Yoyogi-Hachiman",139.68863,35.66948],["Yoyogi-Uehara",139.67968,35.66906],["Higashi-Kitazawa",139.67322,35.6656],["Shimo-Kitazawa",139.66757,35.66165],["Setagaya-Daita",139.66101,35.65808],["Umegaoka",139.6536,35.65602],["Gotokuji",139.64735,35.65374],["Kyodo",139.63662,35.65125],["Chitose-Funabashi",139.62401,35.64742],["Soshigaya-Okura",139.60971,35.64327],["Seijogakuen-Mae",139.59916,35.64015],["Kitami",139.58686,35.63651]]]},{"n":"Tokyu Den-en-toshi","s":[[["Shibuya",139.70103,35.65945],["Ikejiriohashi",139.68364,35.65053],["Sangen-jaya",139.66926,35.64415],["Komazawa-daigaku",139.66165,35.63407],["Sakura-shimmachi",139.64497,35.632],["Yoga",139.63418,35.62613],["Futako-tamagawa",139.62721,35.61223],["Futako-shinchi",139.62242,35.60713],["Takatsu",139.61669,35.60306],["Mizonokuchi",139.61062,35.59996],["Kajigaya",139.60569,35.59378],["Miyazakidai",139.59168,35.58754]]]},{"n":"Tokyu Toyoko","s":[[["Shibuya",139.70257,35.65909],["Daikan-yama",139.70308,35.64804],["Naka-meguro",139.69912,35.64431],["Yutenji",139.69089,35.63748],["Gakugei-daigaku",139.68539,35.62897],["Toritsu-daigaku",139.67595,35.61719],["Jiyugaoka",139.66853,35.60735],["Den-en-chofu",139.66729,35.59689],["Tamagawa",139.66887,35.58922],["Shin-maruko",139.66194,35.5803],["Musashi-kosugi",139.65958,35.57568],["Motosumiyoshi",139.65399,35.56461]]]},{"n":"Tokyu Meguro","s":[[["Meguro",139.71546,35.63297],["Fudo-mae",139.7136,35.62577],["Musashi-koyama",139.70451,35.62065],["Nishi-koyama",139.69889,35.61574],["Senzoku",139.69432,35.6103],["Ookayama",139.68564,35.60749],["Okusawa",139.6721,35.60373],["Den-en-chofu",139.66729,35.59689],["Tamagawa",139.66887,35.58922],["Shin-maruko",139.66194,35.5803],["Musashi-kosugi",139.65958,35.57568],["Motosumiyoshi",139.65399,35.56461]]]},{"n":"Tokyu Oimachi","s":[[["Oimachi",139.73507,35.60759],["Shimo-shimmei",139.7263,35.60881],["Togoshi-koen",139.71806,35.6088],["Nakanobu",139.71264,35.60567],["Ebara-machi",139.7079,35.60377],["Hatanodai",139.7029,35.60478],["Kita-senzoku",139.69322,35.60632],["Ookayama",139.68564,35.60749],["Midorigaoka",139.67913,35.60645],["Jiyugaoka",139.66853,35.60735],["Kuhombutsu",139.66147,35.60534],["Oyamadai",139.6534,35.60718],["Todoroki",139.64755,35.60846],["Kaminoge",139.63913,35.61184],["Futako-tamagawa",139.62721,35.61223],["Futako-shinchi",139.62242,35.60713],["Takatsu",139.61669,35.60306],["Mizonokuchi",139.61062,35.59996]]]},{"n":"Tokyu Ikegami","s":[[["Gotanda",139.72631,35.62625],["Osakihirokoji",139.72271,35.62272],["Togoshi-ginza",139.71476,35.61577],["Ebara-nakanobu",139.71198,35.61],["Hatanodai",139.7029,35.60478],["Nagahara",139.69769,35.6022],["Senzoku-ike",139.69141,35.59993],["Ishikawa-dai",139.68557,35.597],["Yukigayaotsuka",139.68096,35.59201],["Ontakesan",139.68216,35.58534],["Kugahara",139.68535,35.57984],["Chidoricho",139.69156,35.57278],["Ikegami",139.7029,35.57215],["Hasunuma",139.70859,35.56439],["Kamata",139.71464,35.56169]]]},{"n":"Tokyu Setagaya","s":[[["Sangen-jaya",139.66926,35.64415],["Nishi-taishido",139.66604,35.64484],["Wakabayashi",139.65989,35.646],["Shoin-jinja-mae",139.65524,35.644],["Setagaya",139.65071,35.64346],["Kamimachi",139.64662,35.64342],["Miyanosaka",139.64494,35.64788],["Yamashita",139.64659,35.65386],["Matsubara",139.642,35.66006],["Shimo-takaido",139.64138,35.66618]]]},{"n":"Tsukuba Express","s":[[["Akihabara",139.77426,35.69877],["Shin-Okachimachi",139.78205,35.70706],["Asakusa",139.79227,35.71296],["Minami-Senju",139.79907,35.73317],["Kita-Senju",139.80511,35.74953],["Aoi",139.82033,35.77174],["Rokuchō",139.82188,35.78486],["Yashio",139.84483,35.8078]]]},{"n":"Nippori-Toneri Liner","s":[[["Nippori",139.77112,35.72879],["Nishi-nippori",139.76817,35.73374],["Akado-shogakkomae",139.76902,35.74287],["Kumanomae",139.76983,35.74851],["Adachi-odai",139.77038,35.75465],["Ogi-ohashi",139.7708,35.76391],["Koya",139.77069,35.76835],["Kohoku",139.77029,35.77395],["Nishiaraidaishi-nishi",139.77008,35.78151],["Yazaike",139.77004,35.78879],["Toneri-koen",139.77016,35.79638],["Toneri",139.77007,35.80569],["Minumadai-shinsuikoen",139.77071,35.81454]]]},{"n":"Sakura Tram","s":[[["Minowabashi",139.79151,35.73221],["Arakawa-itchumae",139.78884,35.73377],["Arakawakuyakushomae",139.78642,35.73491],["Arakawa-nichome",139.7847,35.73857],["Arakawa-nanachome",139.78421,35.74192],["Machiya-ekimae",139.78089,35.74278],["Machiya-nichome",139.77642,35.74392],["Higashi-ogu-sanchome",139.77387,35.74563],["Kumanomae",139.76986,35.74849],["Miyanomae",139.76619,35.74981],["Odai",139.76174,35.75048],["Arakawa-yuenchimae",139.75752,35.75065],["Arakawa-shakomae",139.75246,35.75086],["Kajiwara",139.74727,35.75107],["Sakaecho",139.74219,35.75086],["Oji-ekimae",139.73804,35.75298],["Asukayama",139.73733,35.75011],["Takinogawa-itchome",139.73542,35.74728],["Nishigahara-yonchome",139.73266,35.74422],["Shin-koshinzuka",139.73034,35.74107],["Koshinzuka",139.72962,35.7395],["Sugamoshinden",139.72768,35.73568],["Otsuka-ekimae",139.7291,35.73119],["Mukohara",139.72476,35.72877],["Higashi-ikebukuro-yonchome",139.7204,35.7254],["Toden-zoshigaya",139.71784,35.72408],["Kishibojimmae",139.71516,35.72057],["Gakushuinshita",139.71253,35.71635],["Omokagebashi",139.7142,35.71301],["Waseda",139.719,35.71176]]]}];
+const THROUGH={Hibiya:[0,"Tobu"],Tozai:["JR","Toyo Rapid"],Chiyoda:["Odakyu","JR"],Yurakucho:["Tobu",0],Hanzomon:["Tokyu","Tobu"],Namboku:["Tokyu","Saitama Rapid"],Fukutoshin:["Tobu or Seibu","Tokyu"],Asakusa:["Keikyu","Keisei"],Mita:["Tokyu",0],Shinjuku:["Keio",0]};
+const WALKX=[["Kokkai-gijidomae","Tameike-sanno"],["Akasaka-mitsuke","Nagatacho"],["Hibiya","Yurakucho"],["Ginza","Hibiya"],["Ueno-okachimachi","Ueno-hirokoji"],["Ueno-okachimachi","Naka-okachimachi"],["Ueno-hirokoji","Naka-okachimachi"],["Shinjuku","Shinjuku-nishiguchi"],["Higashi-nihombashi","Bakuro-yokoyama"],["Shimbashi","Shiodome"],["Kasuga","Korakuen"],["Ogawamachi","Awajicho"],["Ogawamachi","Shin-ochanomizu"],["Awajicho","Shin-ochanomizu"],["Toranomon","Toranomon-hills"]];
+const LANDMARKS=[["Senso-ji Temple",35.7148,139.7967],["Tokyo Skytree",35.7101,139.8107],["Tokyo Tower",35.6586,139.7454],["Meiji Jingu Shrine",35.6764,139.6993],["Shibuya Crossing",35.6595,139.7005],["Shibuya Sky",35.6584,139.7022],["Shinjuku Gyoen",35.6852,139.7101],["Imperial Palace East Gardens",35.6852,139.7553],["Tsukiji Outer Market",35.6654,139.7707],["Toyosu Market",35.6457,139.7857],["Ueno Park",35.7148,139.7731],["Tokyo National Museum",35.7189,139.7766],["Ameyoko",35.7105,139.7745],["Akihabara Electric Town",35.6984,139.7731],["Roppongi Hills",35.6605,139.7292],["Mori Art Museum",35.6604,139.7292],["Tokyo Midtown",35.6655,139.7310],["Azabudai Hills",35.6605,139.7406],["teamLab Borderless",35.6605,139.7406],["teamLab Planets",35.6491,139.7898],["Ginza Six",35.6697,139.7640],["Kabukiza Theatre",35.6696,139.7679],["Takeshita Street",35.6716,139.7031],["Omotesando Hills",35.6673,139.7090],["Yoyogi Park",35.6717,139.6949],["Tokyo Metropolitan Government Building",35.6896,139.6921],["Golden Gai",35.6938,139.7046],["Omoide Yokocho",35.6929,139.6996],["Ryogoku Kokugikan",35.6969,139.7934],["Yanaka Ginza",35.7276,139.7660],["Nezu Shrine",35.7202,139.7607],["Kappabashi Kitchen Town",35.7139,139.7883],["Naka-meguro Canal",35.6440,139.6990],["Tokyo Station (Marunouchi)",35.6812,139.7671],["Hamarikyu Gardens",35.6600,139.7633],["Zojoji Temple",35.6575,139.7483],["Sunshine City",35.7296,139.7193],["Rikugien Garden",35.7330,139.7465],["Koishikawa Korakuen",35.7056,139.7495],["Tokyo Dome",35.7056,139.7519],["Kagurazaka",35.7016,139.7409],["Yasukuni Shrine",35.6942,139.7437],["Kiyosumi Garden",35.6818,139.7975],["Nihonbashi Bridge",35.6840,139.7745],["Odaiba Seaside Park",35.6298,139.7746],["Hie Shrine",35.6747,139.7395],["Gotokuji Temple",35.6487,139.6474],["Tokyo Big Sight",35.6298,139.7943]];
+const WALK_MPM=80,DETOUR=1.25,ACCESS=3,NEAR_KM=2.2;
+const $=id=>document.getElementById(id);
+const norm=s=>s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9\u3040-\u9fff]/g,"");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function km(a,b){const R=6371,t=Math.PI/180,dl=(b.lat-a.lat)*t,dg=(b.lon-a.lon)*t,x=Math.sin(dl/2)**2+Math.cos(a.lat*t)*Math.cos(b.lat*t)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+const walkKm=(a,b)=>km(a,b)*DETOUR, walkMin=(a,b)=>walkKm(a,b)*1000/WALK_MPM;
+const fmtDist=k=>k<1?Math.round(k*1000/10)*10+" m":k.toFixed(1)+" km";
+const fmtClock=t=>new Date(t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false});
+const store={get(k){try{return JSON.parse(localStorage.getItem("pr2-"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("pr2-"+k,JSON.stringify(v))}catch(e){}}};
+
+/* places */
+const sampleP=window.claude&&claude.use?claude.use("sample").catch(()=>null):Promise.resolve(null);
+const inTokyo=(lat,lon)=>lat>35.3&&lat<36.1&&lon>139.2&&lon<140.2;
+function parseCoords(s){let m=s.match(/@(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/[?&](?:q|query|destination|ll|center)=(-?\d+\.\d+)(?:,|%2C)\s*(-?\d+\.\d+)/i)||s.match(/^\s*(-?\d{2}\.\d+)\s*[, ]\s*(-?\d{3}\.\d+)\s*$/)||s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(!m)return null;const lat=+m[1],lon=+m[2];return inTokyo(lat,lon)?{lat,lon}:null}
+let geoCtl=null;
+async function geocode(text,which){const st=$("err");st.style.color="var(--muted)";
+ const sample=await sampleP;
+ if(!sample){st.textContent=`Looking up “${text}”…`;
+  try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=en&viewbox=139.35,35.95,140.05,35.45&bounded=1&q="+encodeURIComponent(text));const j=await r.json();
+   if(!j.length){st.style.color="";st.textContent=`Couldn’t find “${text}”. Try adding the area (e.g. “Shibuya”), paste a Google Maps link, or tap the map.`;return}
+   const e={type:"point",lat:+j[0].lat,lon:+j[0].lon,label:(j[0].name||j[0].display_name.split(",")[0]||text)};setEnd(which,e);
+   st.style.color="var(--muted)";st.textContent="Found "+j[0].display_name.split(",").slice(0,3).join(",")+". Wrong spot? Tap the map to move it.";centerOn(e)}
+  catch(err){st.style.color="";st.textContent="Address search needs an internet connection. Paste a Google Maps link, or tap the map instead."}
+  return}
+ geoCtl&&geoCtl.abort();geoCtl=new AbortController();st.textContent=`Looking up “${text}”…`;
+ try{const r=await sample.json(`You are a geocoder for Tokyo, Japan. Find the location the user means and return ONLY JSON: {"found":true|false,"name":"short English name","lat":number,"lon":number,"precision":"exact"|"street"|"area","note":"one short sentence, e.g. which branch or why approximate"}. Use WGS84 decimal degrees with 5 decimals. Prefer places in central Tokyo. Japanese addresses: resolve to the chome or building as precisely as you can. If it is a chain or ambiguous, pick the most famous Tokyo one and say so in note. If you can't place it in the Tokyo area, found=false.\n\nQuery: ${text}`,{signal:geoCtl.signal});
+  if(!r||!r.found||!inTokyo(+r.lat,+r.lon)){st.style.color="";st.textContent=`Couldn’t place “${text}”. Try adding the area (e.g. “Shibuya”), paste a Google Maps link, or tap the map.`;return}
+  const e={type:"point",lat:+r.lat,lon:+r.lon,label:r.name||text};setEnd(which,e);
+  st.textContent=(r.precision==="exact"?"Found ":"Approximate location for ")+(r.name||text)+(r.note?". "+r.note:"")+" Wrong spot? Tap the map to move it.";
+  centerOn(e)}
+ catch(err){if(err&&err.code==="aborted")return;st.style.color="";st.textContent=err&&err.code==="not_granted"?"Address search needs your OK to use Claude. Paste a Google Maps link or tap the map instead.":err&&err.code==="rate_limited"?"Too many lookups at once. Wait a moment and try again.":"Lookup failed. Paste a Google Maps link or tap the map instead."}}
+
+/* graph */
+const nodes=[],byName={},stations={};
+LINES.forEach((L,li)=>L.st.forEach((s,si)=>{const id=nodes.length;nodes.push({id,li,si,name:s[0],disp:s[1],lon:s[2],lat:s[3],ja:s[4],adj:[]});(byName[s[0]]=byName[s[0]]||[]).push(id);
+ if(!stations[s[0]])stations[s[0]]={name:s[0],disp:s[1],ja:s[4],lon:s[2],lat:s[3],lines:[]};const S=stations[s[0]];if(!S.lines.includes(li))S.lines.push(li);if(s[1].length>S.disp.length)S.disp=s[1]}));
+const idx={};nodes.forEach(n=>idx[n.li+":"+n.si]=n.id);
+LINES.forEach((L,li)=>{for(let i=0;i<L.st.length-1;i++){const a=nodes[idx[li+":"+i]],b=nodes[idx[li+":"+(i+1)]];const t=Math.max(1.5,km(a,b)/0.6+0.6);a.adj.push({to:b.id,t,k:"ride"});b.adj.push({to:a.id,t,k:"ride"})}});
+Object.values(byName).forEach(ids=>ids.forEach(a=>ids.forEach(b=>{if(a!==b){const same=nodes[a].li===nodes[b].li;nodes[a].adj.push({to:b,t:same?0:5,k:same?"loop":"xfer"})}})));
+WALKX.forEach(([x,y])=>{(byName[x]||[]).forEach(a=>(byName[y]||[]).forEach(b=>{nodes[a].adj.push({to:b,t:8,k:"walk"});nodes[b].adj.push({to:a,t:8,k:"walk"})}))});
+const stList=Object.values(stations).sort((a,b)=>a.disp.localeCompare(b.disp));
+const avoidSt=[];AVOID.forEach(A=>A.s.forEach(seg=>seg.forEach(p=>{if(!stations[p[0]])avoidSt.push({name:p[0],line:A.n,lon:p[1],lat:p[2]})})));
+
+/* state */
+let mode=store.get("mode")||"fast";
+let from=store.get("from"), to=store.get("to"); // {type:'here'|'station'|'point', name?, lat?, lon?, label?}
+let pos=null, watchId=null, route=null, trip=store.get("trip"), follow=false, showAvoid=store.get("avoid")!==false;
+let lastPlanPos=null, wake=null;
+
+function endpoint(e){if(!e)return null;if(e.type==="here")return pos?{lat:pos.lat,lon:pos.lon,label:"Your location",here:1}:null;if(e.type==="station"){const S=stations[e.name];return S?{lat:S.lat,lon:S.lon,label:S.disp,station:S.name}:null}return {lat:e.lat,lon:e.lon,label:e.label||"Dropped pin"}}
+function nearStations(p,n){return stList.map(S=>({S,d:km(p,S)})).filter(x=>x.d<=NEAR_KM).sort((a,b)=>a.d-b.d).slice(0,n)}
+
+function solve(){
+ const F=endpoint(from),T=endpoint(to);if(!F||!T)return null;
+ const pen=mode==="few"?18:0,N=nodes.length,dist=new Float64Array(N).fill(Infinity),prev=new Int32Array(N).fill(-1),done=new Uint8Array(N);
+ if(F.station)byName[F.station].forEach(i=>dist[i]=0);else nearStations(F,6).forEach(({S})=>byName[S.name].forEach(i=>dist[i]=Math.min(dist[i],walkMin(F,S)+ACCESS)));
+ for(;;){let u=-1,best=Infinity;for(let i=0;i<N;i++)if(!done[i]&&dist[i]<best){best=dist[i];u=i}if(u<0)break;done[u]=1;for(const e of nodes[u].adj){const c=dist[u]+e.t+((e.k==="xfer"||e.k==="walk")?pen:0);if(c<dist[e.to]){dist[e.to]=c;prev[e.to]=u}}}
+ let end=-1,bc=Infinity;const ends=T.station?byName[T.station].map(i=>[i,0]):[].concat(...nearStations(T,6).map(({S})=>byName[S.name].map(i=>[i,walkMin(S,T)+1])));
+ ends.forEach(([i,x])=>{if(dist[i]+x<bc){bc=dist[i]+x;end=i}});
+ const direct=walkMin(F,T);
+ const steps=[];
+ if(end<0||(direct<=bc&&direct<35)||km(F,T)<0.35){if(km(F,T)<0.02)return {same:1};steps.push({type:"walk",from:pt(F),to:pt(T),km:walkKm(F,T),min:direct});return finish(steps,F,T)}
+ const path=[];for(let u=end;u>=0;u=prev[u])path.unshift(u);
+ const first=nodes[path[0]];if(!F.station){const S=stations[first.name];steps.push({type:"walk",from:pt(F),to:pt(S,S.disp+" station",S.name),km:walkKm(F,S),min:walkMin(F,S)+ACCESS})}
+ let cur=null;
+ for(let i=0;i<path.length-1;i++){const a=nodes[path[i]],b=nodes[path[i+1]],e=a.adj.find(x=>x.to===b.id);
+  if(e.k==="ride"){if(!cur||cur.li!==a.li){cur={type:"ride",li:a.li,stops:[a.id],min:0};steps.push(cur)}cur.stops.push(b.id);cur.min+=e.t}
+  else if(e.k==="loop"){if(cur)cur.stops[cur.stops.length-1]=b.id}
+  else{steps.push({type:"xfer",walk:e.k==="walk",from:a.id,to:b.id,min:e.t});cur=null}}
+ while(steps.length&&steps[steps.length-1].type==="xfer")steps.pop();
+ const last=nodes[path[path.length-1]];if(!T.station){const S=stations[last.name];steps.push({type:"walk",from:pt(S,S.disp+" station",S.name),to:pt(T),km:walkKm(S,T),min:walkMin(S,T)+1})}
+ steps.forEach(s=>{if(s.type==="xfer"){const i=steps.indexOf(s),n=steps[i+1];s.toLi=n&&n.type==="ride"?n.li:null}});
+ return finish(steps,F,T)}
+const pt=(p,label,station)=>({lat:p.lat,lon:p.lon,label:label||p.label,station:station||p.station||null});
+function finish(steps,F,T){const rides=steps.filter(s=>s.type==="ride");return {steps,min:steps.reduce((a,s)=>a+s.min,0),walkKm:steps.filter(s=>s.type==="walk").reduce((a,s)=>a+s.km,0),walkMin:steps.filter(s=>s.type==="walk").reduce((a,s)=>a+s.min,0),changes:Math.max(0,rides.length-1),stops:rides.reduce((a,s)=>a+s.stops.length-1,0),F:pt(F),T:pt(T)}}
+
+function direction(st){const L=LINES[st.li],a=nodes[st.stops[0]].si,b=nodes[st.stops[1]].si;
+ if(L.id==="Oedo")return "the platform for "+st.stops.slice(1,3).map(i=>nodes[i].disp).join(", then ")+" (Oedo loop)";
+ return b>a?L.st[L.st.length-1][1]:L.st[0][1]}
+function throughNote(st){const L=LINES[st.li],th=THROUGH[L.id],fw=nodes[st.stops[1]].si>nodes[st.stops[0]].si,op=th&&th[fw?1:0];return op?`Trains this way may show a destination on ${op} tracks beyond ${esc(direction(st))}. Board any of them and get off at ${esc(nodes[st.stops[st.stops.length-1]].disp)}.`:""}
+const badge=(L,lg)=>`<span class="b${lg?" lg":""}" style="border-color:${L.color}">${L.code}</span>`;
+const gmaps=p=>`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=walking`;
+
+function stepTitle(s){if(s.type==="walk")return `Walk to ${esc(s.to.label)}`;if(s.type==="ride"){const L=LINES[s.li];return `${esc(L.name)} to ${esc(nodes[s.stops[s.stops.length-1]].disp)}`}const L2=s.toLi!=null?LINES[s.toLi]:null;return s.walk?`Walk through to ${esc(nodes[s.to].disp)}`:`Change to the ${esc(L2?L2.name:"next line")}`}
+function stepIcon(s){if(s.type==="walk")return `<span class="b" style="border-color:var(--muted)">🚶</span>`;if(s.type==="ride")return badge(LINES[s.li]);return s.toLi!=null?badge(LINES[s.toLi]):""}
+
+/* render planner result */
+function renderPlan(){
+ const out=$("out");
+ if(trip){out.innerHTML="";return}
+ if(!from||!to){out.innerHTML=`<div class="panel empty">${from&&from.type==="here"&&!pos?"Waiting for your location…":"Pick where you’re going: type a station, or tap anywhere on the map. Every route uses only lines your pass covers."}</div>`;route=null;drawRoute();return}
+ route=solve();
+ if(!route){out.innerHTML=`<div class="panel empty">${from.type==="here"&&!pos?"Waiting for your location…":"No pass-only route found."}</div>`;drawRoute();return}
+ if(route.same){out.innerHTML='<div class="panel empty">You’re already there.</div>';route=null;drawRoute();return}
+ let h=`<div class="panel result"><div class="sum"><div class="big">${Math.round(route.min)}<small>min</small></div><div class="meta"><span>Arrive <b>${fmtClock(Date.now()+route.min*60000)}</b></span><span>${route.changes===0?"No changes":route.changes+(route.changes>1?" changes":" change")}</span><span>Walk <b>${fmtDist(route.walkKm)}</b> (${Math.round(route.walkMin)} min)</span></div></div><div style="padding-top:12px">`;
+ route.steps.forEach((s,k)=>{
+  if(s.type==="walk")h+=`<div class="leg"><div class="lbar"><span class="b" style="border-color:var(--muted)">🚶</span><span class="walkbar"></span></div><div>${k===0?`<div class="stn">${esc(s.from.label)}</div>`:`<div class="stn" style="font-size:15px;font-weight:500;color:var(--muted)">Exit the station</div>`}<div class="ride">Walk ${fmtDist(s.km)}, about ${Math.round(s.min)} min${s.to.station?" including getting to the platform":""}<br><a href="${gmaps(s.to)}" target="_blank" rel="noopener">Walking directions in Google Maps</a></div>${s.to.station?"":`<div class="stn" style="margin-bottom:10px">${esc(s.to.label)}</div>`}</div></div>`;
+  else if(s.type==="ride"){const L=LINES[s.li],a=nodes[s.stops[0]],b=nodes[s.stops[s.stops.length-1]],mid=s.stops.slice(1,-1),tn=throughNote(s);
+   h+=`<div class="leg"><div class="lbar">${badge(L,1)}<span class="bar" style="background:${L.color}"></span>${badge(L,1)}</div><div><div class="stn">${esc(a.disp)}<span class="ja">${a.ja}</span></div><div class="ride"><div class="ln">${esc(L.name)} <span style="color:var(--muted);font-weight:400">${L.op}</span></div>Towards ${esc(direction(s))}, ${s.stops.length-1} ${s.stops.length===2?"stop":"stops"}, about ${Math.round(s.min)} min${mid.length?`<details><summary>Show ${mid.length} stations in between</summary><ol>${mid.map(x=>"<li>"+esc(nodes[x].disp)+"</li>").join("")}</ol></details>`:""}${tn?`<div class="note">${tn}</div>`:""}</div><div class="stn" style="margin-bottom:10px">${esc(b.disp)}<span class="ja">${b.ja}</span></div></div></div>`}
+  else h+=`<div class="xfer">${stepIcon(s)}<span>${stepTitle(s)}. Allow about ${Math.round(s.min)} min.</span></div>`});
+ h+=`</div><button class="btn go" id="startTrip" style="margin-top:8px">Start trip</button></div>`;
+ out.innerHTML=h;$("startTrip").onclick=startTrip;drawRoute(true)}
+
+/* trip mode */
+function startTrip(){if(!route)return;trip={steps:route.steps,min:route.min,F:route.F,T:route.T,i:0,ride:0,started:Date.now()};store.set("trip",trip);startWatch();keepAwake();follow=!!pos;$("follow").setAttribute("aria-pressed",follow);renderAll();window.scrollTo({top:0,behavior:"smooth"})}
+function endTrip(){trip=null;store.set("trip",null);if(wake){try{wake.release()}catch(e){}wake=null}renderAll()}
+function advance(){if(!trip)return;if(trip.i<trip.steps.length-1){trip.i++;trip.ride=0;store.set("trip",trip);buzz();renderLive();drawRoute(!follow)}else{buzz([80,60,80,60,200]);trip.arrived=1;store.set("trip",trip);renderLive()}}
+function back(){if(!trip||trip.i===0)return;trip.i--;trip.ride=0;trip.arrived=0;store.set("trip",trip);renderLive();drawRoute(!follow)}
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p||[120,80,120])}catch(e){}}
+async function keepAwake(){try{if("wakeLock" in navigator&&!wake){wake=await navigator.wakeLock.request("screen");wake.addEventListener("release",()=>{wake=null})}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&trip)keepAwake()});
+function remainingMin(){if(!trip)return 0;const s=trip.steps[trip.i];let cur=s.min;
+ if(s.type==="walk"&&pos){cur=Math.min(s.min,walkMin(pos,s.to)+(s.to.station?ACCESS:0))}
+ if(s.type==="ride"){const n=s.stops.length-1;cur=s.min*(n-trip.ride)/n}
+ return cur+trip.steps.slice(trip.i+1).reduce((a,x)=>a+x.min,0)}
+function renderLive(){
+ const box=$("livebox");if(!trip){box.innerHTML="";return}
+ const s=trip.steps[trip.i],rem=remainingMin();
+ let instr="",sub="",extra="",c1="",c1v="";
+ if(trip.arrived){box.innerHTML=`<div class="panel live"><div class="instr">You’ve arrived at ${esc(trip.T.label)}</div><div class="sub">Trip took ${Math.round((Date.now()-trip.started)/60000)} min.</div><div class="acts" style="margin-top:14px"><button class="btn primary" id="endT">Done</button></div></div>`;$("endT").onclick=endTrip;return}
+ if(s.type==="walk"){const left=pos?walkKm(pos,s.to):s.km;instr=`🚶 Walk to ${esc(s.to.label)}`;sub=`${fmtDist(left)} to go, about ${Math.round(left*1000/WALK_MPM)} min.`+(s.to.station?" Look for the Metro or Toei sign at the entrance.":"");c1="Walk left";c1v=fmtDist(left);
+  extra=`<a class="btn" href="${gmaps(s.to)}" target="_blank" rel="noopener">Walking directions</a>`}
+ else if(s.type==="ride"){const L=LINES[s.li],n=s.stops.length-1,left=n-trip.ride,b=nodes[s.stops[n]];
+  instr=trip.ride===0?`${badge(L,1)}<span>Board the ${esc(L.name)} towards ${esc(direction(s))}</span>`:`${badge(L,1)}<span>${left===1?"Get off at the next stop":"Stay on: "+left+" stops"}</span>`;
+  sub=`Get off at ${esc(b.disp)} (${b.ja}).`+(left<=1?" <b style='color:var(--ink)'>Next stop.</b>":"");c1="Stops left";c1v=left;
+  const tn=throughNote(s);
+  extra=`<ol class="stops" style="--c:${L.color}">${s.stops.map((id,k)=>`<li data-k="${k}" class="${k<trip.ride?"done":k===trip.ride?"cur":""}"><span class="t"></span>${esc(nodes[id].disp)}<span class="hint">${k===trip.ride?(k===0?"Board here":"You’re here"):k===n?"Get off":""}</span></li>`).join("")}</ol>${tn?`<div class="note">${tn}</div>`:""}<div class="gps">Underground GPS is patchy. Tap a stop to mark where you are.</div>`}
+ else{const L2=s.toLi!=null?LINES[s.toLi]:null;instr=`${L2?badge(L2,1):""}<span>${stepTitle(s)}</span>`;sub=`Follow the ${L2?`${esc(L2.name)} (${L2.code})`:"signs"} signs${L2?` in ${L2.op==="Toei"?"Toei":"Tokyo Metro"} colours`:""}. Allow about ${Math.round(s.min)} min.`;c1="Step";c1v="Change"}
+ box.innerHTML=`<div class="panel live"><div class="stepof"><span>Step ${trip.i+1} of ${trip.steps.length}</span><span>To ${esc(trip.T.label)}</span></div><div class="instr">${instr}</div><div class="sub">${sub}</div>
+ <div class="now"><div><small>Arrive</small><strong>${fmtClock(Date.now()+rem*60000)}</strong></div><div><small>Time left</small><strong>${Math.round(rem)} min</strong></div><div><small>${c1}</small><strong>${c1v}</strong></div></div>
+ <div class="acts">${trip.i>0?'<button class="btn" id="prevS">Back</button>':""}<button class="btn primary" id="nextS">${trip.i===trip.steps.length-1?"I’ve arrived":s.type==="ride"&&trip.ride===0?"I’m on the train":s.type==="ride"?"Passed a stop":"Done, next step"}</button>${extra&&s.type==="walk"?extra:""}</div>
+ ${s.type!=="walk"?extra:""}
+ <div class="plan">${trip.steps.map((x,k)=>`<div class="pstep ${k<trip.i?"done":k===trip.i?"cur":""}">${stepIcon(x)}<span>${stepTitle(x)}</span><span style="margin-left:auto">${Math.round(x.min)} min</span></div>`).join("")}</div>
+ <div class="acts" style="margin-top:12px"><button class="btn" id="endT">End trip</button></div>
+ <div class="gps">${pos?`GPS accuracy about ${Math.round(pos.acc)} m. `:"Waiting for GPS… "}Your trip is saved, so you can close and reopen the app.</div></div>`;
+ $("nextS").onclick=()=>{if(s.type==="ride"){const n=s.stops.length-1;if(trip.ride<n-1){trip.ride++;store.set("trip",trip);renderLive();drawMe()}else advance()}else advance()};
+ if($("prevS"))$("prevS").onclick=back;$("endT").onclick=endTrip;
+ box.querySelectorAll(".stops li").forEach(li=>li.onclick=()=>{const k=+li.dataset.k,n=s.stops.length-1;if(k>=n)advance();else{trip.ride=k;store.set("trip",trip);renderLive();drawMe()}});
+}
+function tripTick(){if(!trip||trip.arrived||!pos)return;const s=trip.steps[trip.i];
+ if(s.type==="walk"){if(km(pos,s.to)<0.06&&pos.acc<80)advance();else renderLive()}
+ else if(s.type==="ride"&&pos.acc<300){let best=-1,bd=0.35;s.stops.forEach((id,k)=>{const d=km(pos,nodes[id]);if(d<bd){bd=d;best=k}});
+  if(best>trip.ride){if(best===s.stops.length-1)advance();else{trip.ride=best;store.set("trip",trip);buzz([60]);renderLive()}}}}
+
+/* location */
+function startWatch(){if(watchId!=null||!navigator.geolocation)return;
+ watchId=navigator.geolocation.watchPosition(p=>{const first=!pos;pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,h:p.coords.heading};
+  $("err").textContent="";drawMe();
+  if(trip){tripTick();if(follow)centerOn(pos)}
+  else if(from&&from.type==="here"&&(first||!lastPlanPos||km(lastPlanPos,pos)>0.1)){lastPlanPos={...pos};renderPlan()}},
+ e=>{$("err").textContent=e.code===1?"Location is blocked. Allow location for this page in your browser settings, or type a station.":"Can’t get your location right now. Type a station instead.";watchId=null},{enableHighAccuracy:true,maximumAge:5000,timeout:20000})}
+
+/* map */
+const svg=$("map"),NS="http://www.w3.org/2000/svg";
+const cosl=Math.cos(35.69*Math.PI/180),K=1000;
+const P=(lon,lat)=>[(lon-139.4)*cosl*K,(36-lat)*K];
+let all=[1e9,1e9,-1e9,-1e9];nodes.forEach(n=>{const[x,y]=P(n.lon,n.lat);all=[Math.min(all[0],x),Math.min(all[1],y),Math.max(all[2],x),Math.max(all[3],y)]});
+let vb={x:0,y:0,w:1,h:1};
+const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+const gAvoid=mk("g"),gLines=mk("g"),gRoute=mk("g"),gAvSt=mk("g"),gSt=mk("g"),gLab=mk("g"),gMe=mk("g");
+svg.append(gAvoid,gLines,gRoute,gAvSt,gSt,gLab,gMe);
+AVOID.forEach(A=>A.s.forEach(seg=>gAvoid.append(mk("polyline",{points:seg.map(p=>P(p[1],p[2]).join(",")).join(" "),fill:"none",stroke:"var(--no)","stroke-width":"2.2","stroke-dasharray":"5 4","stroke-linejoin":"round","vector-effect":"non-scaling-stroke",opacity:".7"}))));
+LINES.forEach(L=>gLines.append(mk("polyline",{points:L.st.map(s=>P(s[2],s[3]).join(",")).join(" "),fill:"none",stroke:L.color,"stroke-width":"3.5","stroke-linejoin":"round","stroke-linecap":"round","vector-effect":"non-scaling-stroke"})));
+const gLm=mk("g");svg.insertBefore(gLm,gLab);
+const lmDots=LANDMARKS.map(l=>{const[x,y]=P(l[2],l[1]);const r=mk("rect",{fill:"var(--ink)",opacity:".8"});gLm.append(r);return{r,l,x,y}});
+const avDots=avoidSt.map(a=>{const[x,y]=P(a.lon,a.lat);const c=mk("circle",{cx:x,cy:y,fill:"var(--surface)",stroke:"var(--no)","vector-effect":"non-scaling-stroke","stroke-width":"1.2"});gAvSt.append(c);return{c,a,x,y}});
+const stDots=stList.map(S=>{const[x,y]=P(S.lon,S.lat);const c=mk("circle",{cx:x,cy:y,fill:"var(--surface)",stroke:S.lines.length>1?"var(--ink)":LINES[S.lines[0]].color,"vector-effect":"non-scaling-stroke"});gSt.append(c);return{c,S,x,y}});
+function applyAvoid(){gAvoid.style.display=gAvSt.style.display=showAvoid?"":"none";$("legend").classList.toggle("off",!showAvoid)}
+$("legend").onclick=()=>{showAvoid=!showAvoid;store.set("avoid",showAvoid);applyAvoid()};
+const pxu=()=>vb.w/(svg.clientWidth||360);
+function sizeDots(){const px=pxu(),z=vb.w<40?1.4:1;stDots.forEach(d=>{d.c.setAttribute("r",(d.S.lines.length>1?4.5:3)*px*z);d.c.setAttribute("stroke-width",d.S.lines.length>1?2:1.5)});avDots.forEach(d=>d.c.setAttribute("r",(vb.w<40?2.6:1.8)*px));const s=(vb.w<40?6:4)*px;lmDots.forEach(d=>{d.r.setAttribute("x",d.x-s/2);d.r.setAttribute("y",d.y-s/2);d.r.setAttribute("width",s);d.r.setAttribute("height",s);d.r.setAttribute("transform",`rotate(45 ${d.x} ${d.y})`)});drawLabels();drawMe()}
+function setVB(){svg.setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`)}
+function fit(b,pad){const W=svg.clientWidth||360,H=svg.clientHeight||360,ar=W/H;let w=b[2]-b[0]+pad*2,h=b[3]-b[1]+pad*2;if(w/h>ar)h=w/ar;else w=h*ar;vb={x:(b[0]+b[2])/2-w/2,y:(b[1]+b[3])/2-h/2,w,h};setVB();sizeDots()}
+function centerOn(p){const[x,y]=P(p.lon,p.lat);if(vb.w>20){vb.w=12;vb.h=12*(svg.clientHeight/svg.clientWidth)}vb.x=x-vb.w/2;vb.y=y-vb.h/2;setVB();sizeDots()}
+let raf=0;function redraw(){setVB();if(!raf)raf=requestAnimationFrame(()=>{raf=0;sizeDots()})}
+function inView(x,y){return x>vb.x&&x<vb.x+vb.w&&y>vb.y&&y<vb.y+vb.h}
+function label(x,y,txt,opt={}){const px=pxu();const t=mk("text",{x:x+6*px,y:y-6*px,"font-size":(opt.fs||12)*px,"font-weight":opt.bold?"700":"500",fill:opt.color||"var(--ink)",stroke:"var(--surface)","stroke-width":3*px,"paint-order":"stroke"});t.textContent=txt;gLab.append(t)}
+function activeSteps(){return trip?trip.steps:route?route.steps:null}
+function drawLabels(){gLab.innerHTML="";const show=new Set(),steps=activeSteps();
+ if(steps)steps.forEach(s=>{if(s.type==="ride"){show.add(nodes[s.stops[0]].name);show.add(nodes[s.stops[s.stops.length-1]].name)}});
+ else{if(from&&from.type==="station")show.add(from.name);if(to&&to.type==="station")show.add(to.name)}
+ if(vb.w<22)stDots.forEach(d=>{if(inView(d.x,d.y))show.add(d.S.name)});
+ stDots.forEach(d=>{if(show.has(d.S.name))label(d.x,d.y,d.S.disp,{bold:steps&&true})});
+ if(vb.w<26)lmDots.forEach(d=>{if(inView(d.x,d.y))label(d.x,d.y,d.l[0],{fs:11,color:"var(--muted)"})});
+ if(vb.w<14&&showAvoid){const seen=new Set();avDots.forEach(d=>{if(inView(d.x,d.y)&&!seen.has(d.a.name)){seen.add(d.a.name);label(d.x,d.y,d.a.name,{fs:11,color:"var(--no)"})}})}
+ const T=steps?(trip?trip.T:route.T):(to&&to.type==="point"?to:null);if(T&&!T.station){const[x,y]=P(T.lon,T.lat);label(x,y,T.label||"Dropped pin",{bold:1})}}
+function drawRoute(doFit){gRoute.innerHTML="";const steps=activeSteps();gLines.style.opacity=steps?0.25:1;gAvoid.style.opacity=steps?0.5:1;
+ if(steps){let b=[1e9,1e9,-1e9,-1e9];const add=([x,y])=>b=[Math.min(b[0],x),Math.min(b[1],y),Math.max(b[2],x),Math.max(b[3],y)];
+  steps.forEach((s,k)=>{const dim=trip&&k<trip.i;
+   if(s.type==="walk"){const pts=[P(s.from.lon,s.from.lat),P(s.to.lon,s.to.lat)];pts.forEach(add);gRoute.append(mk("polyline",{points:pts.map(p=>p.join(",")).join(" "),fill:"none",stroke:"var(--ink)","stroke-width":"4","stroke-dasharray":"1 7","stroke-linecap":"round","vector-effect":"non-scaling-stroke",opacity:dim?.3:1}))}
+   if(s.type==="ride"){const L=LINES[s.li],pts=s.stops.map(i=>P(nodes[i].lon,nodes[i].lat));pts.forEach(add);const a={points:pts.map(p=>p.join(",")).join(" "),fill:"none","stroke-linecap":"round","stroke-linejoin":"round","vector-effect":"non-scaling-stroke",opacity:dim?.3:1};gRoute.append(mk("polyline",{...a,stroke:"var(--surface)","stroke-width":"11"}),mk("polyline",{...a,stroke:L.color,"stroke-width":"7"}))}});
+  const T=trip?trip.T:route.T;if(!T.station){const[x,y]=P(T.lon,T.lat);add([x,y]);gRoute.append(mk("circle",{cx:x,cy:y,r:0.25,fill:"var(--ink)"}))}
+  if(doFit)fit(b,Math.max(1.2,(b[2]-b[0])*0.12))}
+ else if(to&&to.type==="point"){const[x,y]=P(to.lon,to.lat);gRoute.append(mk("circle",{cx:x,cy:y,r:0.25,fill:"var(--ink)"}))}
+ sizeDots()}
+function drawMe(){gMe.innerHTML="";if(!pos)return;const[x,y]=P(pos.lon,pos.lat),px=pxu(),accU=pos.acc/1000/111*K;
+ gMe.append(mk("circle",{cx:x,cy:y,r:Math.max(accU,8*px),fill:"var(--me)",opacity:".15"}),mk("circle",{cx:x,cy:y,r:7*px,fill:"var(--me)",stroke:"#fff","stroke-width":2.5*px}))}
+
+/* pan zoom */
+const ptrs=new Map();let start=null,moved=0;
+function svgPt(cx,cy){const r=svg.getBoundingClientRect();return[vb.x+(cx-r.left)/r.width*vb.w,vb.y+(cy-r.top)/r.height*vb.h]}
+const clampW=w=>Math.min(Math.max(w,2),(all[2]-all[0])*1.8);
+function zoomAt(f,cx,cy){const[px,py]=svgPt(cx,cy);f=clampW(vb.w*f)/vb.w;vb={x:px-(px-vb.x)*f,y:py-(py-vb.y)*f,w:vb.w*f,h:vb.h*f};redraw()}
+function stopFollow(){if(follow){follow=false;$("follow").setAttribute("aria-pressed","false")}}
+svg.addEventListener("pointerdown",e=>{svg.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);moved=0;start={vb:{...vb},pts:new Map(ptrs)}});
+svg.addEventListener("pointermove",e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,[e.clientX,e.clientY]);const r=svg.getBoundingClientRect();
+ if(ptrs.size===1&&start.pts.size===1){const[sx,sy]=start.pts.get(e.pointerId);const dx=e.clientX-sx,dy=e.clientY-sy;moved=Math.max(moved,Math.hypot(dx,dy));if(moved>6)stopFollow();vb.x=start.vb.x-dx/r.width*start.vb.w;vb.y=start.vb.y-dy/r.height*start.vb.h;redraw()}
+ else if(ptrs.size===2){const[a,b]=[...ptrs.values()],sp=[...start.pts.values()];if(sp.length<2){start={vb:{...vb},pts:new Map(ptrs)};return}moved=99;const d0=Math.hypot(sp[0][0]-sp[1][0],sp[0][1]-sp[1][1]),d1=Math.hypot(a[0]-b[0],a[1]-b[1]);const cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;const ox=start.vb.x+(cx-r.left)/r.width*start.vb.w,oy=start.vb.y+(cy-r.top)/r.height*start.vb.h;const k=clampW(start.vb.w*d0/d1)/start.vb.w;vb={x:ox-(ox-start.vb.x)*k,y:oy-(oy-start.vb.y)*k,w:start.vb.w*k,h:start.vb.h*k};redraw()}});
+svg.addEventListener("pointerup",e=>{const tapped=ptrs.size===1&&moved<6;ptrs.delete(e.pointerId);start={vb:{...vb},pts:new Map(ptrs)};if(tapped)tap(e.clientX,e.clientY)});
+svg.addEventListener("pointercancel",e=>ptrs.delete(e.pointerId));
+svg.addEventListener("wheel",e=>{e.preventDefault();zoomAt(Math.exp(e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
+let picked=null;
+function tap(cx,cy){const[x,y]=svgPt(cx,cy),px=pxu();let best=null,bd=16*px;stDots.forEach(d=>{const dd=Math.hypot(d.x-x,d.y-y);if(dd<bd){bd=dd;best=d}});
+ let lm=null;if(!best){let lb=14*px;lmDots.forEach(d=>{const dd=Math.hypot(d.x-x,d.y-y);if(dd<lb){lb=dd;lm=d}})}
+ let av=null;if(!best&&!lm&&showAvoid){let ab=12*px;avDots.forEach(d=>{const dd=Math.hypot(d.x-x,d.y-y);if(dd<ab){ab=dd;av=d}})}
+ const why=$("pickWhy");
+ if(best){picked={type:"station",name:best.S.name};$("pickName").textContent=best.S.disp+" "+best.S.ja;why.hidden=true}
+ else if(lm){picked={type:"point",lat:lm.l[1],lon:lm.l[2],label:lm.l[0]};$("pickName").textContent=lm.l[0];why.hidden=true}
+ else if(av){picked={type:"point",lat:av.a.lat,lon:av.a.lon,label:av.a.name+" (JR/private)"};$("pickName").textContent=av.a.name;why.hidden=false;why.textContent=`${av.a.line} isn’t covered. “Go here” routes you to the nearest covered station and walks you the rest.`}
+ else{const lon=x/(cosl*K)+139.4,lat=36-y/K;picked={type:"point",lat,lon,label:"Dropped pin"};$("pickName").textContent="Dropped pin";why.hidden=true}
+ $("pick").classList.add("on")}
+$("pickX").onclick=()=>$("pick").classList.remove("on");
+$("pickFrom").onclick=()=>{setEnd("from",picked);$("pick").classList.remove("on")};
+$("pickTo").onclick=()=>{setEnd("to",picked);$("pick").classList.remove("on")};
+$("zin").onclick=()=>{const r=svg.getBoundingClientRect();zoomAt(0.6,r.left+r.width/2,r.top+r.height/2)};
+$("zout").onclick=()=>{const r=svg.getBoundingClientRect();zoomAt(1.6,r.left+r.width/2,r.top+r.height/2)};
+$("zfit").onclick=()=>{stopFollow();activeSteps()?drawRoute(true):fit(all,1)};
+$("follow").onclick=()=>{follow=!follow;$("follow").setAttribute("aria-pressed",follow);if(follow){startWatch();if(pos)centerOn(pos)}};
+
+/* inputs */
+const labelOf=e=>!e?"":e.type==="here"?"My location":e.type==="station"?stations[e.name].disp:e.label||"Dropped pin";
+function setEnd(which,e){if(trip)return;if(which==="from")from=e;else to=e;store.set(which,e);$(which).value=labelOf(e);$("err").textContent="";$("err").style.color="";if(e&&e.type==="here")startWatch();renderPlan();drawLabels()}
+function suggest(inp,box,which){let hi=-1;
+ const show=()=>{const q=norm(inp.value);let items=[];
+  if(which==="from"&&(!q||"mylocation".includes(q)))items.push(`<button type="button" data-here="1"><span class="me-i"></span><span>My location</span></button>`);
+  if(q){stList.filter(S=>norm(S.disp).includes(q)||S.ja.includes(inp.value.trim())).sort((a,b)=>(norm(a.disp).indexOf(q)-norm(b.disp).indexOf(q))||(a.disp.length-b.disp.length)).slice(0,8).forEach(S=>items.push(`<button type="button" data-n="${esc(S.name)}"><span class="chips">${S.lines.map(l=>badge(LINES[l])).join("")}</span><span>${esc(S.disp)}</span><span class="ja">${S.ja}</span></button>`));
+   const jr=avoidSt.find(a=>norm(a.name)===q||norm(a.name).startsWith(q));if(items.length<=1&&jr)items.push(`<button type="button" data-av="${esc(jr.name)}"><span class="b" style="border-color:var(--no)">!</span><span>${esc(jr.name)}: ${esc(jr.line)}, not covered. Route via nearest covered station</span></button>`)}
+  if(q.length>=2)LANDMARKS.filter(l=>norm(l[0]).includes(q)).slice(0,4).forEach(l=>items.push(`<button type="button" data-lm="${esc(l[0])}"><span class="b" style="border-color:var(--ink)">◆</span><span>${esc(l[0])}</span></button>`));
+  const raw=inp.value.trim();
+  if(parseCoords(raw))items.unshift(`<button type="button" data-xy="1"><span class="b" style="border-color:var(--me)">⌖</span><span>Use this map location</span></button>`);
+  else if(/maps\.app\.goo\.gl|goo\.gl\/maps/.test(raw))items.unshift(`<div style="padding:12px;color:var(--muted);font-size:14px">Short share links can’t be opened here. In Google Maps, long-press the spot and copy the coordinates instead.</div>`);
+  else if(raw.length>=3)items.push(`<button type="button" data-geo="1"><span class="b" style="border-color:var(--muted)">🔍</span><span>Find “${esc(raw)}” as an address or place</span></button>`);
+  if(raw.length>=3&&!items.length)items.push(`<div style="padding:12px;color:var(--muted);font-size:14px">No match. You can also tap anywhere on the map.</div>`);
+  box.innerHTML=items.join("");box.classList.toggle("on",items.length>0);hi=-1};
+ const choose=b=>{const raw=inp.value.trim();if(b.dataset.geo){box.classList.remove("on");inp.blur();geocode(raw,which);return}if(b.dataset.xy){const c=parseCoords(raw);setEnd(which,{type:"point",lat:c.lat,lon:c.lon,label:"Map location"});centerOn(c)}else if(b.dataset.lm){const l=LANDMARKS.find(x=>x[0]===b.dataset.lm);setEnd(which,{type:"point",lat:l[1],lon:l[2],label:l[0]})}else if(b.dataset.here)setEnd(which,{type:"here"});else if(b.dataset.av){const a=avoidSt.find(x=>x.name===b.dataset.av);setEnd(which,{type:"point",lat:a.lat,lon:a.lon,label:a.name+" (JR/private)"})}else setEnd(which,{type:"station",name:b.dataset.n});box.classList.remove("on");inp.blur()};
+ inp.addEventListener("input",show);inp.addEventListener("focus",()=>{inp.select();show()});
+ inp.addEventListener("keydown",e=>{const bs=[...box.querySelectorAll("button")];if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();if(!bs.length)return;hi=(hi+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length;bs.forEach((b,i)=>b.classList.toggle("hl",i===hi))}else if(e.key==="Enter"){const b=bs[hi>=0?hi:0];if(b)choose(b)}else if(e.key==="Escape")box.classList.remove("on")});
+ box.addEventListener("pointerdown",e=>e.preventDefault());
+ box.addEventListener("click",e=>{const b=e.target.closest("button");if(b)choose(b)});
+ inp.addEventListener("blur",()=>{box.classList.remove("on");inp.value=labelOf(which==="from"?from:to)})}
+suggest($("from"),$("sf"),"from");suggest($("to"),$("st"),"to");
+$("loc").onclick=()=>setEnd("from",{type:"here"});
+$("swap").onclick=()=>{const f=from;from=to;to=f;store.set("from",from);store.set("to",to);$("from").value=labelOf(from);$("to").value=labelOf(to);if(from&&from.type==="here")startWatch();renderPlan()};
+function setMode(m){mode=m;store.set("mode",m);$("mFast").setAttribute("aria-pressed",m==="fast");$("mFew").setAttribute("aria-pressed",m==="few");renderPlan()}
+$("mFast").onclick=()=>setMode("fast");$("mFew").onclick=()=>setMode("few");
+
+function renderAll(){$("app").classList.toggle("trip-on",!!trip);$("planner").hidden=!!trip;$("foot").hidden=!!trip;renderLive();renderPlan();drawRoute(true)}
+setInterval(()=>{if(trip&&!trip.arrived)renderLive()},30000);
+window.addEventListener("resize",()=>{activeSteps()?drawRoute(true):fit(all,1)});
+
+$("from").value=labelOf(from);$("to").value=labelOf(to);setMode(mode);applyAvoid();
+requestAnimationFrame(()=>{fit(all,1);if(trip||(from&&from.type==="here"))startWatch();if(trip){keepAwake();follow=true;$("follow").setAttribute("aria-pressed","true")}renderAll()});
+if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude\.(ai|site)|claudeusercontent/.test(location.hostname)){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>
